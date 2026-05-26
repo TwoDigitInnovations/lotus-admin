@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { MdEmail, MdPhone, MdPerson, MdEdit, MdCheck, MdClose } from "react-icons/md";
+import { Mail, Phone, User, Pencil, Check, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile, updateProfile } from "@/redux/actions/userActions";
 import isAuth from "@/components/isAuth";
@@ -90,8 +90,8 @@ function Profile(props) {
       hasError
         ? "border-red-300 bg-red-50"
         : editMode
-        ? "border-gray-200 bg-white focus-within:border-[#078DD4]"
-        : "border-transparent bg-gray-50"
+        ? "border-slate-200 bg-white focus-within:border-[#078DD4]"
+        : "border-transparent bg-slate-50"
     }`;
 
   const initial = profile.fullname
@@ -102,10 +102,9 @@ function Profile(props) {
     <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
 
-        {/* page title */}
         <div className="mb-6">
           <h1 className="text-2xl font-extrabold text-[#0d1f35] m-0">My Profile</h1>
-          <p className="text-sm text-gray-400 mt-1">Manage your account information</p>
+          <p className="text-sm text-slate-400 mt-1">Manage your account information</p>
         </div>
 
         <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.07)]">
@@ -133,7 +132,7 @@ function Profile(props) {
                 <div className="text-lg font-bold text-[#0d1f35]">
                   {profile.fullname || "Your Name"}
                 </div>
-                <div className="text-sm text-gray-400 mt-0.5">
+                <div className="text-sm text-slate-400 mt-0.5">
                   {profile.email || "your@email.com"}
                 </div>
               </div>
@@ -141,53 +140,49 @@ function Profile(props) {
               {!editMode ? (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl border-none bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors mt-1"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors mt-1"
                 >
-                  <MdEdit size={15} />
+                  <Pencil size={15} />
                   Edit Profile
                 </button>
               ) : (
                 <div className="flex gap-2 mt-1">
                   <button
                     onClick={handleCancel}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <MdClose size={14} />
+                    <X size={14} />
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border-none bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors"
                   >
-                    <MdCheck size={14} />
+                    <Check size={14} />
                     Save Changes
                   </button>
                 </div>
               )}
             </div>
 
-            {/* divider */}
-            <div className="h-px bg-gray-100 mb-5" />
+            <div className="h-px bg-slate-100 mb-5" />
 
-            {/* section label */}
             <p className="text-[11px] font-bold text-[#078DD4] tracking-widest uppercase mb-5">
               Personal Information
             </p>
 
-            {/* fields */}
             <div className="flex flex-col gap-4">
 
-              {/* Full Name */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
                   Full Name
                 </label>
                 <div className={inputCls(submitted && errors.fullname)}>
-                  <MdPerson className="text-[#078DD4] text-lg shrink-0" />
+                  <User size={18} className="text-[#078DD4] shrink-0" />
                   <input
                     type="text"
                     placeholder="Enter your full name"
-                    className="bg-transparent outline-none w-full text-sm text-gray-700 placeholder-gray-300"
+                    className="bg-transparent outline-none w-full text-sm text-slate-700 placeholder-slate-300"
                     value={form.fullname}
                     disabled={!editMode}
                     onChange={(e) => handleChange("fullname", e.target.value)}
@@ -198,17 +193,16 @@ function Profile(props) {
                 )}
               </div>
 
-              {/* Email */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
                   Email Address
                 </label>
                 <div className={inputCls(submitted && errors.email)}>
-                  <MdEmail className="text-[#078DD4] text-lg shrink-0" />
+                  <Mail size={18} className="text-[#078DD4] shrink-0" />
                   <input
                     type="email"
                     placeholder="name@email.com"
-                    className="bg-transparent outline-none w-full text-sm text-gray-700 placeholder-gray-300"
+                    className="bg-transparent outline-none w-full text-sm text-slate-700 placeholder-slate-300"
                     value={form.email}
                     disabled={!editMode}
                     onChange={(e) => handleChange("email", e.target.value)}
@@ -219,17 +213,16 @@ function Profile(props) {
                 )}
               </div>
 
-              {/* Phone */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
                   Phone Number
                 </label>
                 <div className={inputCls(submitted && errors.phone)}>
-                  <MdPhone className="text-[#078DD4] text-lg shrink-0" />
+                  <Phone size={18} className="text-[#078DD4] shrink-0" />
                   <input
                     type="tel"
                     placeholder="+91 98765 43210"
-                    className="bg-transparent outline-none w-full text-sm text-gray-700 placeholder-gray-300"
+                    className="bg-transparent outline-none w-full text-sm text-slate-700 placeholder-slate-300"
                     value={form.phone}
                     disabled={!editMode}
                     onChange={(e) => handleChange("phone", e.target.value)}
