@@ -24,7 +24,7 @@ const allRoutes = [
   { title: "Blog", href: "/blogs", icon: BookOpen },
   { title: "Contact Enquiries", href: "/contacts", icon: Mail },
   { title: "Customers", href: "/customers", icon: Users },
-  { title: "Settings", href: "/settings", icon: Settings },
+  // { title: "Settings", href: "/settings", icon: Settings },
   { title: "Profile", href: "/profile", icon: User },
 ];
 
@@ -294,14 +294,7 @@ export default function Navbar({ setOpen }) {
                     <User size={15} className="text-gray-400 shrink-0" />
                     Profile
                   </Link>
-                  <Link
-                    href="/settings"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <Settings size={15} className="text-gray-400 shrink-0" />
-                    Settings
-                  </Link>
+                
                 </div>
 
                 <div className="border-t border-gray-100 py-1">

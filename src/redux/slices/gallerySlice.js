@@ -4,6 +4,7 @@ const gallerySlice = createSlice({
   name: "gallery",
   initialState: {
     items: [],
+    currentItem: null,
     loading: false,
     error: null,
     total: 0,
@@ -11,6 +12,9 @@ const gallerySlice = createSlice({
     currentPage: 1,
   },
   reducers: {
+    setCurrentItem: (state, action) => {
+      state.currentItem = action.payload;
+    },
     setItems: (state, action) => {
       state.items = Array.isArray(action.payload) ? action.payload : [];
     },
@@ -41,7 +45,7 @@ const gallerySlice = createSlice({
 });
 
 export const {
-  setItems, setLoading, setError, setMeta,
+  setItems, setCurrentItem, setLoading, setError, setMeta,
   addItem, updateItem, removeItem,
 } = gallerySlice.actions;
 

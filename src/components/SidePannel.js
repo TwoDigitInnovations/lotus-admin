@@ -22,7 +22,7 @@ const navItems = [
   { href: "/gallery", icon: Images, title: "Gallery" },
   { href: "/blogs", icon: BookOpen, title: "Blog" },
   { href: "/contacts", icon: Mail, title: "Contact Enquiries" },
-  { href: "/customers", icon: Users, title: "Customers" },
+  // { href: "/customers", icon: Users, title: "Customers" },
 ];
 
 function NavItem({ href, icon: Icon, title, active, onClick }) {
@@ -125,13 +125,13 @@ function SidePannel({ open, setOpen }) {
 
         {/* Bottom */}
         <div className="px-2 pb-3 pt-2 border-t border-gray-100 space-y-0.5 shrink-0">
-          <NavItem
+          {/* <NavItem
             href="/settings"
             icon={Settings}
             title="Settings"
             active={pathname === "/settings"}
             onClick={close}
-          />
+          /> */}
           <button
             onClick={() => setShowLogoutModal(true)}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-red-500 hover:bg-red-50 transition-colors"
