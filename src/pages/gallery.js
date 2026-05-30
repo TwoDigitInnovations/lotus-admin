@@ -76,12 +76,12 @@ function GalleryCard({ item, onEdit, onDelete, onToggleActive, toggling }) {
               {isVideo ? <Video size={28} className="text-slate-300" /> : <ImageIcon size={28} className="text-slate-300" />}
             </div>}
 
-        <span className={`absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${isVideo ? "bg-violet-500 text-white" : "bg-[#078DD4] text-white"}`}>
+        <span className={`absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${isVideo ? "bg-[#0d1f35] text-white" : "bg-[#078DD4] text-white"}`}>
           {isVideo ? <Video size={9} /> : <ImageIcon size={9} />}
           {isVideo ? "Video" : "Photo"}
         </span>
 
-        <span className={`absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${item.isActive ? "bg-emerald-500 text-white" : "bg-slate-400 text-white"}`}>
+        <span className={`absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${item.isActive ? "bg-[#078DD4] text-white" : "bg-slate-400 text-white"}`}>
           {item.isActive ? <Eye size={9} /> : <EyeOff size={9} />}
           {item.isActive ? "Active" : "Hidden"}
         </span>
@@ -98,7 +98,7 @@ function GalleryCard({ item, onEdit, onDelete, onToggleActive, toggling }) {
             disabled={toggling === item._id}
             className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm transition-colors disabled:opacity-50"
           >
-            {item.isActive ? <EyeOff size={14} className="text-amber-500" /> : <Eye size={14} className="text-emerald-500" />}
+            {item.isActive ? <EyeOff size={14} className="text-[#0d1f35]" /> : <Eye size={14} className="text-[#078DD4]" />}
           </button>
           <button
             onClick={() => onDelete(item._id)}
@@ -143,7 +143,7 @@ function ListRow({ item, onEdit, onDelete, onToggleActive, toggling, index }) {
         </div>
       </td>
       <td className="px-4 py-3">
-        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold ${isVideo ? "bg-violet-50 text-violet-600" : "bg-sky-50 text-[#078DD4]"}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold ${isVideo ? "bg-slate-100 text-[#0d1f35]" : "bg-[#e0f2fe] text-[#078DD4]"}`}>
           {isVideo ? <Video size={10} /> : <ImageIcon size={10} />}
           {isVideo ? "Video" : "Photo"}
         </span>
@@ -153,7 +153,7 @@ function ListRow({ item, onEdit, onDelete, onToggleActive, toggling, index }) {
         <button
           onClick={() => onToggleActive(item)}
           disabled={toggling === item._id}
-          className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold transition-colors disabled:opacity-50 ${item.isActive ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+          className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold transition-colors disabled:opacity-50 ${item.isActive ? "bg-[#e0f2fe] text-[#078DD4] hover:bg-[#bae6fd]" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
         >
           {item.isActive ? <CheckCircle2 size={10} /> : <EyeOff size={10} />}
           {item.isActive ? "Active" : "Hidden"}
@@ -253,9 +253,9 @@ function Gallery(props) {
           {/* Stat cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard label="Total" value={total} icon={LayoutGrid} color="#078DD4" />
-            <StatCard label="Photos" value={photos.length} icon={ImageIcon} color="#7c3aed" />
-            <StatCard label="Videos" value={videos.length} icon={Video} color="#d97706" />
-            <StatCard label="Active" value={active.length} icon={Eye} color="#059669" />
+            <StatCard label="Photos" value={photos.length} icon={ImageIcon} color="#0d1f35" />
+            <StatCard label="Videos" value={videos.length} icon={Video} color="#0d1f35" />
+            <StatCard label="Active" value={active.length} icon={Eye} color="#078DD4" />
           </div>
 
           {/* Filter bar */}

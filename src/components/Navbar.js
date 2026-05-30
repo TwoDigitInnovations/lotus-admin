@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { FiMenu, FiBell, FiSearch, FiX } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { logoutUser } from "@/redux/slices/userSlice";
@@ -13,6 +12,10 @@ import {
   BookOpen,
   Mail,
   Users,
+  Menu,
+  Bell,
+  Search,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import LogoutModal from "./LogoutModal";
@@ -140,7 +143,7 @@ export default function Navbar({ setOpen }) {
             className="md:hidden text-gray-300 hover:text-white p-1 transition-colors"
             onClick={() => setOpen(true)}
           >
-            <FiMenu size={20} />
+            <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
             <div
@@ -172,7 +175,7 @@ export default function Navbar({ setOpen }) {
               inputRef.current?.focus();
             }}
           >
-            <FiSearch size={13} className="text-gray-400 shrink-0" />
+            <Search size={13} className="text-gray-400 shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -197,7 +200,7 @@ export default function Navbar({ setOpen }) {
                 }}
                 className="text-gray-400 hover:text-gray-200 transition-colors"
               >
-                <FiX size={12} />
+                <X size={12} />
               </button>
             ) : (
               <kbd className="bg-white/10 text-gray-400 text-[10px] px-1.5 py-1 rounded font-mono leading-none shrink-0">
@@ -251,7 +254,7 @@ export default function Navbar({ setOpen }) {
         {/* Right — bell + avatar */}
         <div className="ml-auto flex items-center gap-1 shrink-0">
           <button className="text-gray-300 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
-            <FiBell size={16} />
+            <Bell size={16} />
           </button>
 
           <div className="relative" ref={dropdownRef}>

@@ -18,8 +18,8 @@ function ToolBtn({ onClick, active, title, children }) {
       title={title}
       className={`p-1.5 rounded transition-colors ${
         active
-          ? "bg-gray-200 text-gray-900"
-          : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+          ? "bg-slate-200 text-slate-900"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
       }`}
     >
       {children}
@@ -43,7 +43,7 @@ export default function TipTapEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "tiptap-content min-h-[160px] p-3 outline-none text-sm text-gray-800",
+        class: "tiptap-content min-h-[160px] p-3 outline-none text-sm text-slate-800",
       },
     },
     onBlur: ({ editor }) => {
@@ -62,11 +62,11 @@ export default function TipTapEditor({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <p className="text-sm font-medium text-gray-600">{label}</p>
+        <p className="text-sm font-medium text-slate-600">{label}</p>
       )}
-      <div className="rounded-xl overflow-hidden border border-gray-300 bg-white shadow-sm focus-within:ring-1 focus-within:ring-gray-400">
+      <div className="rounded-xl overflow-hidden border border-slate-300 bg-white shadow-sm focus-within:ring-1 focus-within:ring-slate-400">
         {/* Toolbar */}
-        <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-slate-200 bg-slate-50">
           <ToolBtn
             active={editor.isActive("bold")}
             title="Bold"

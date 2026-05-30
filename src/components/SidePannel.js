@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FiX } from "react-icons/fi";
 import {
   Home,
   FolderOpen,
   Images,
   BookOpen,
   Mail,
-  Users,
-  Settings,
   LogOut,
+  X,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/redux/slices/userSlice";
@@ -102,7 +100,7 @@ function SidePannel({ open, setOpen }) {
             className="md:hidden p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
             onClick={close}
           >
-            <FiX size={16} />
+            <X size={16} />
           </button>
         </div>
 

@@ -68,7 +68,7 @@ function BlogCard({ blog, onEdit, onDelete }) {
           : <div className="w-full h-full flex items-center justify-center">
               <FileText size={32} className="text-slate-300" />
             </div>}
-        <span className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md text-[11px] font-semibold ${blog.isPublished ? "bg-emerald-500 text-white" : "bg-amber-400 text-white"}`}>
+        <span className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md text-[11px] font-semibold ${blog.isPublished ? "bg-[#078DD4] text-white" : "bg-[#0d1f35] text-white"}`}>
           {blog.isPublished ? "Published" : "Draft"}
         </span>
       </div>
@@ -192,8 +192,8 @@ function BlogsPage() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard label="Total Posts" value={stats.total} icon={BookOpen} color="#078DD4" />
-            <StatCard label="Published" value={stats.published} icon={Globe} color="#059669" />
-            <StatCard label="Drafts" value={stats.draft} icon={FileText} color="#d97706" />
+            <StatCard label="Published" value={stats.published} icon={Globe} color="#078DD4" />
+            <StatCard label="Drafts" value={stats.draft} icon={FileText} color="#0d1f35" />
           </div>
 
           {/* Filter bar */}

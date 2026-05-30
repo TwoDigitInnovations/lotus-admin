@@ -13,9 +13,9 @@ import {
 } from "lucide-react";
 
 const CONTACT_STATUS = {
-  new: { label: "New", bg: "#dbeafe", color: "#1e40af" },
-  read: { label: "Read", bg: "#fef3c7", color: "#92400e" },
-  replied: { label: "Replied", bg: "#d1fae5", color: "#065f46" },
+  new: { label: "New", bg: "#e0f2fe", color: "#078DD4" },
+  read: { label: "Read", bg: "#f1f5f9", color: "#475569" },
+  replied: { label: "Replied", bg: "#e8eef5", color: "#0d1f35" },
 };
 
 function StatCard({ icon: Icon, label, value, sub, color, href }) {
@@ -149,7 +149,7 @@ function Dashboard() {
                   label="Projects"
                   value={projects.total}
                   sub={`${projects.active ?? 0} active · ${projects.featured ?? 0} featured`}
-                  color="#7c3aed"
+                  color="#0d1f35"
                   href="/projects"
                 />
                 <StatCard
@@ -157,7 +157,7 @@ function Dashboard() {
                   label="Blog Posts"
                   value={blogs.total}
                   sub={`${blogs.published ?? 0} published · ${blogs.drafts ?? 0} drafts`}
-                  color="#0d9488"
+                  color="#078DD4"
                   href="/blogs"
                 />
                 <StatCard
@@ -165,7 +165,7 @@ function Dashboard() {
                   label="Gallery"
                   value={gallery.total}
                   sub={`${gallery.photos ?? 0} photos · ${gallery.videos ?? 0} videos`}
-                  color="#d97706"
+                  color="#0d1f35"
                   href="/gallery"
                 />
               </>
@@ -181,10 +181,10 @@ function Dashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <MiniStat label="Residential" value={projects.residential} icon={Home} color="#7c3aed" />
-                <MiniStat label="Commercial" value={projects.commercial} icon={Briefcase} color="#1d4ed8" />
-                <MiniStat label="Under Construction" value={projects.underConstruction} icon={HardHat} color="#d97706" />
-                <MiniStat label="Ready to Move" value={projects.readyToMove} icon={MoveRight} color="#059669" />
+                <MiniStat label="Residential" value={projects.residential} icon={Home} color="#0d1f35" />
+                <MiniStat label="Commercial" value={projects.commercial} icon={Briefcase} color="#078DD4" />
+                <MiniStat label="Under Construction" value={projects.underConstruction} icon={HardHat} color="#0d1f35" />
+                <MiniStat label="Ready to Move" value={projects.readyToMove} icon={MoveRight} color="#078DD4" />
               </div>
             )}
           </div>
@@ -273,8 +273,8 @@ function Dashboard() {
                       <span
                         className="px-2 py-0.5 rounded-md text-[11px] font-semibold shrink-0"
                         style={b.isPublished
-                          ? { background: "#d1fae5", color: "#065f46" }
-                          : { background: "#fef3c7", color: "#92400e" }}
+                          ? { background: "#e0f2fe", color: "#078DD4" }
+                          : { background: "#f1f5f9", color: "#475569" }}
                       >
                         {b.isPublished ? <span className="flex items-center gap-1"><Globe size={9} /> Live</span> : "Draft"}
                       </span>
@@ -320,8 +320,8 @@ function Dashboard() {
                       <span
                         className="px-2 py-0.5 rounded-md text-[11px] font-semibold shrink-0"
                         style={p.status === "Ready to Move"
-                          ? { background: "#d1fae5", color: "#065f46" }
-                          : { background: "#fef3c7", color: "#92400e" }}
+                          ? { background: "#e0f2fe", color: "#078DD4" }
+                          : { background: "#f1f5f9", color: "#475569" }}
                       >
                         {p.status === "Ready to Move" ? "Ready" : "U.C."}
                       </span>
@@ -337,9 +337,9 @@ function Dashboard() {
             <h2 className="text-sm font-bold text-slate-800 mb-4">Quick Actions</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Add Project", href: "/projects/add", icon: Building2, color: "#7c3aed" },
-                { label: "New Blog Post", href: "/blogs/add", icon: FileText, color: "#0d9488" },
-                { label: "Upload to Gallery", href: "/gallery/add", icon: Image, color: "#d97706" },
+                { label: "Add Project", href: "/projects/add", icon: Building2, color: "#0d1f35" },
+                { label: "New Blog Post", href: "/blogs/add", icon: FileText, color: "#078DD4" },
+                { label: "Upload to Gallery", href: "/gallery/add", icon: Image, color: "#0d1f35" },
                 { label: "View Contacts", href: "/contacts", icon: MessageSquare, color: "#078DD4" },
               ].map((q) => (
                 <Link key={q.href} href={q.href}>

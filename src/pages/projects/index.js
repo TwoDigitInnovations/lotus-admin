@@ -8,12 +8,12 @@ import { fetchProjects, deleteProject } from "@/redux/actions/projectActions";
 import { Plus, Pencil, Trash2, Building2, MapPin, Star, LayoutGrid } from "lucide-react";
 
 const STATUS_COLOR = {
-  "Under Construction": { bg: "#fef3c7", color: "#92400e" },
-  "Ready to Move": { bg: "#d1fae5", color: "#065f46" },
+  "Under Construction": { bg: "#f1f5f9", color: "#475569" },
+  "Ready to Move": { bg: "#e0f2fe", color: "#078DD4" },
 };
 const CAT_COLOR = {
-  residential: { bg: "#ede9fe", color: "#5b21b6" },
-  commercial: { bg: "#dbeafe", color: "#1e40af" },
+  residential: { bg: "#e8eef5", color: "#0d1f35" },
+  commercial: { bg: "#e0f2fe", color: "#078DD4" },
 };
 
 function StatCard({ label, value, icon: Icon, color }) {
@@ -80,7 +80,7 @@ function ProjectCard({ project, onDelete }) {
             {project.category}
           </span>
           {project.isFeatured && (
-            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-100 text-amber-700 flex items-center gap-1">
+            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold flex items-center gap-1" style={{ background: "#e8eef5", color: "#0d1f35" }}>
               <Star size={9} /> Featured
             </span>
           )}
@@ -211,9 +211,9 @@ function ProjectsPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard label="Total" value={stats.total} icon={LayoutGrid} color="#078DD4" />
-            <StatCard label="Residential" value={stats.residential} icon={Building2} color="#7c3aed" />
-            <StatCard label="Commercial" value={stats.commercial} icon={Building2} color="#1d4ed8" />
-            <StatCard label="Featured" value={stats.featured} icon={Star} color="#d97706" />
+            <StatCard label="Residential" value={stats.residential} icon={Building2} color="#0d1f35" />
+            <StatCard label="Commercial" value={stats.commercial} icon={Building2} color="#078DD4" />
+            <StatCard label="Featured" value={stats.featured} icon={Star} color="#0d1f35" />
           </div>
 
           {/* Filters */}
