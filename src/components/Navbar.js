@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { logoutUser } from "@/redux/slices/userSlice";
 import {
   User,
-  Settings,
   LogOut,
   Home,
   FolderOpen,
@@ -146,17 +145,11 @@ export default function Navbar({ setOpen }) {
             <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-center shrink-0"
-              style={{ background: "#078DD4" }}
-            >
-              <span className="text-[7px] font-bold tracking-widest leading-tight">
-                <span className="text-white block">LOTUS</span>
-                <span style={{ color: "#d4a017" }} className="block -mt-0.5">
-                  SS
-                </span>
-              </span>
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="Lotusss Logo"
+              className="w-14 h-14 rounded-full object-cover shrink-0"
+            />
             <span className="text-white font-semibold text-sm tracking-wide hidden sm:block">
               Lotusss
             </span>

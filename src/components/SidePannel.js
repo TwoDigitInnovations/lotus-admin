@@ -9,6 +9,10 @@ import {
   Mail,
   LogOut,
   X,
+  LayoutDashboard,
+  Info,
+  FileText,
+  Settings,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/redux/slices/userSlice";
@@ -20,7 +24,13 @@ const navItems = [
   { href: "/gallery", icon: Images, title: "Gallery" },
   { href: "/blogs", icon: BookOpen, title: "Blog" },
   { href: "/contacts", icon: Mail, title: "Contact Enquiries" },
-  // { href: "/customers", icon: Users, title: "Customers" },
+];
+
+const siteItems = [
+  { href: "/site/banners", icon: LayoutDashboard, title: "Hero Banners" },
+  { href: "/site/settings", icon: Settings, title: "Site Settings" },
+  { href: "/site/about", icon: Info, title: "About Page" },
+  { href: "/site/policy", icon: FileText, title: "Policy Pages" },
 ];
 
 function NavItem({ href, icon: Icon, title, active, onClick }) {
@@ -79,16 +89,13 @@ function SidePannel({ open, setOpen }) {
       >
         {/* Brand header */}
         <div className="px-3 pt-3 pb-2 flex items-center justify-between shrink-0 border-b border-gray-100">
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-center shrink-0"
-              style={{ background: "#078DD4", boxShadow: "0 2px 8px rgba(7,141,212,0.3)" }}
-            >
-              <span className="text-[8px] font-bold tracking-widest leading-tight">
-                <span className="text-white block">LOTUS</span>
-                <span style={{ color: "#d4a017" }} className="block -mt-0.5">SS</span>
-              </span>
-            </div>
+          <div className="flex items-center">
+            <img
+              src="/images/logo.png"
+              alt="Lotusss Logo"
+              className="w-14 h-14 rounded-full object-cover shrink-0"
+              // style={{ boxShadow: "0 2px 8px rgba(7,141,212,0.3)" }}
+            />
             <div>
               <p className="text-[13px] font-semibold text-gray-900 leading-tight">
                 Lotusss
@@ -116,6 +123,20 @@ function SidePannel({ open, setOpen }) {
               icon={item.icon}
               title={item.title}
               active={pathname === item.href}
+              onClick={close}
+            />
+          ))}
+
+          <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-4 mb-2">
+            Site Content
+          </p>
+          {siteItems.map((item) => (
+            <NavItem
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              title={item.title}
+              active={pathname === item.href || pathname.startsWith(item.href)}
               onClick={close}
             />
           ))}
