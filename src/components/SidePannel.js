@@ -13,6 +13,7 @@ import {
   Info,
   FileText,
   Settings,
+  LayoutGrid,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/redux/slices/userSlice";
@@ -31,6 +32,7 @@ const siteItems = [
   { href: "/site/settings", icon: Settings, title: "Site Settings" },
   { href: "/site/about", icon: Info, title: "About Page" },
   { href: "/site/policy", icon: FileText, title: "Policy Pages" },
+  { href: "/site/property-types", icon: LayoutGrid, title: "Property Types" },
 ];
 
 function NavItem({ href, icon: Icon, title, active, onClick }) {

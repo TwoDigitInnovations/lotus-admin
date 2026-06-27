@@ -90,6 +90,11 @@ const WELCOME_SAMPLE = {
   subheading: "Your Dream Home Awaits in Noida",
   description:
     "<p>At <strong>Lotusss Real Estate</strong>, we believe that a home is more than just four walls — it's where memories are made and lives are built.</p><p>With over 15 years of experience in the Noida real estate market, we have helped <strong>2,500+ families</strong> find their dream homes. Our projects combine world-class amenities with thoughtful design and transparent pricing.</p>",
+  imageUrls: [
+    "https://picsum.photos/seed/lotus-villa/800/560",
+    "https://picsum.photos/seed/lotus-apt/800/560",
+    "https://picsum.photos/seed/lotus-arch/800/560",
+  ],
 };
 
 const WHY_SAMPLE = {
@@ -129,6 +134,7 @@ const TESTIMONIAL_SAMPLE = [
     quote:
       "<p>We purchased a 3 BHK apartment and the entire experience was seamless. The team was responsive, the paperwork was transparent, and the quality of construction exceeded our expectations.</p>",
     rating: 5,
+    image: "https://i.pravatar.cc/150?img=12",
   },
   {
     name: "Priya Gupta",
@@ -136,6 +142,7 @@ const TESTIMONIAL_SAMPLE = [
     quote:
       "<p>I've invested in two projects by Lotusss and both have given excellent returns. The location selection is strategic and the after-sales support is outstanding.</p>",
     rating: 5,
+    image: "https://i.pravatar.cc/150?img=49",
   },
   {
     name: "Arvind Kumar",
@@ -143,6 +150,7 @@ const TESTIMONIAL_SAMPLE = [
     quote:
       "<p>The amenities are top-notch and the community is wonderful. My children love the play area and we enjoy the clubhouse every weekend. Truly a 5-star living experience.</p>",
     rating: 4,
+    image: "https://i.pravatar.cc/150?img=57",
   },
 ];
 
@@ -193,6 +201,10 @@ function WelcomeTab({ data, onSaved, router }) {
       fd.append("subheading", form.subheading);
       fd.append("description", form.description);
       files.forEach((f) => fd.append("images", f));
+      // If no files chosen but previews are remote URLs (sample data), send as imageUrls
+      if (files.length === 0 && previews.length > 0 && previews.every((p) => !p.startsWith("blob:"))) {
+        fd.append("imageUrls", JSON.stringify(previews));
+      }
       const res = await ApiFormData("put", "site-settings/welcome", fd, router);
       if (res?.status) onSaved("Welcome section saved!");
       else onSaved(res?.message || "Failed", "error");
@@ -201,10 +213,17 @@ function WelcomeTab({ data, onSaved, router }) {
     }
   };
 
+  const loadSample = () => {
+    const { imageUrls, ...textFields } = WELCOME_SAMPLE;
+    setForm(textFields);
+    setPreviews(imageUrls);
+    setFiles([]);
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex justify-end">
-        <SampleBtn onClick={() => setForm(WELCOME_SAMPLE)} />
+        <SampleBtn onClick={loadSample} />
       </div>
 
       <Field label="Heading" required>
@@ -781,9 +800,87 @@ function FooterTab({ data, onSaved, router }) {
   );
 }
 
+// ─── Privacy Policy Tab ───────────────────────────────────────────────────────
+
+function PrivacyPolicyTab({ data, onSaved, router }) {
+  const [content, setContent] = useState(data || "");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setContent(data || ""); }, [data]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const res = await Api("put", "site-settings/privacy-policy", { content }, router);
+      if (res?.status) onSaved("Privacy Policy saved!");
+      else onSaved(res?.message || "Failed", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <p className="text-xs text-slate-400">
+        This content is displayed on the <strong>/privacy-policy</strong> page when a custom version is saved. Leave empty to show the default static content.
+      </p>
+      <Field label="Privacy Policy Content">
+        <RichEditor
+          key={typeof data === "string" ? data.slice(0, 20) : "pp"}
+          value={content}
+          onChange={setContent}
+          height={420}
+          toolbar="full"
+          placeholder="Write your Privacy Policy here…"
+        />
+      </Field>
+      <SaveBtn onClick={save} saving={saving} />
+    </div>
+  );
+}
+
+// ─── Terms of Service Tab ─────────────────────────────────────────────────────
+
+function TermsTab({ data, onSaved, router }) {
+  const [content, setContent] = useState(data || "");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setContent(data || ""); }, [data]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const res = await Api("put", "site-settings/terms", { content }, router);
+      if (res?.status) onSaved("Terms of Service saved!");
+      else onSaved(res?.message || "Failed", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <p className="text-xs text-slate-400">
+        This content is displayed on the <strong>/terms-of-service</strong> page when a custom version is saved. Leave empty to show the default static content.
+      </p>
+      <Field label="Terms of Service Content">
+        <RichEditor
+          key={typeof data === "string" ? data.slice(0, 20) : "tos"}
+          value={content}
+          onChange={setContent}
+          height={420}
+          toolbar="full"
+          placeholder="Write your Terms of Service here…"
+        />
+      </Field>
+      <SaveBtn onClick={save} saving={saving} />
+    </div>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const TABS = ["Welcome", "Why Choose Us", "Testimonials", "Footer"];
+const TABS = ["Welcome", "Why Choose Us", "Testimonials", "Footer", "Privacy Policy", "Terms of Service"];
 
 function SiteSettingsPage() {
   const router = useRouter();
@@ -810,12 +907,16 @@ function SiteSettingsPage() {
     settings?.whyChooseUs,
     settings?.testimonials,
     settings?.footer,
+    settings?.privacyPolicy,
+    settings?.termsOfService,
   ];
   const TabComponents = [
     WelcomeTab,
     WhyChooseUsTab,
     TestimonialsTab,
     FooterTab,
+    PrivacyPolicyTab,
+    TermsTab,
   ];
   const ActiveTab = TabComponents[tab];
 

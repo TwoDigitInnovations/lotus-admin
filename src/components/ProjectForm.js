@@ -6,6 +6,7 @@ import {
   ArrowLeft, UploadCloud, Plus, Trash2, X,
   Building2, Image as ImageIcon, AlignLeft, Shield, MapPin, FolderOpen,
 } from "lucide-react";
+import RichEditor from "@/components/RichEditor";
 
 const EMPTY = {
   name: "",
@@ -258,12 +259,13 @@ export default function ProjectForm({ initialData, projectId }) {
 
           {/* Overview */}
           <Section icon={AlignLeft} title="Overview">
-            <textarea
+            <RichEditor
+              key={projectId || "new-project"}
               value={form.overview}
-              onChange={(e) => set("overview", e.target.value)}
-              placeholder="Describe this project…"
-              rows={5}
-              className={`${FIELD_CLS} resize-y`}
+              onChange={(v) => set("overview", v)}
+              height={220}
+              toolbar="standard"
+              placeholder="Describe this project — location highlights, amenities, pricing…"
             />
           </Section>
 
@@ -290,7 +292,14 @@ export default function ProjectForm({ initialData, projectId }) {
               </div>
               <div>
                 <label className={LABEL_CLS}>City Description</label>
-                <textarea value={form.aboutCity.text} onChange={(e) => setNested("aboutCity", "text", e.target.value)} placeholder="Write about the city…" rows={3} className={`${FIELD_CLS} resize-none`} />
+                <RichEditor
+                  key={`city-${projectId || "new"}`}
+                  value={form.aboutCity.text}
+                  onChange={(v) => setNested("aboutCity", "text", v)}
+                  height={140}
+                  toolbar="minimal"
+                  placeholder="Write about the city…"
+                />
               </div>
             </div>
           </Section>
@@ -304,7 +313,14 @@ export default function ProjectForm({ initialData, projectId }) {
               </div>
               <div>
                 <label className={LABEL_CLS}>Sector Description</label>
-                <textarea value={form.aboutSector.text} onChange={(e) => setNested("aboutSector", "text", e.target.value)} placeholder="Write about the sector…" rows={3} className={`${FIELD_CLS} resize-none`} />
+                <RichEditor
+                  key={`sector-${projectId || "new"}`}
+                  value={form.aboutSector.text}
+                  onChange={(v) => setNested("aboutSector", "text", v)}
+                  height={140}
+                  toolbar="minimal"
+                  placeholder="Write about the sector…"
+                />
               </div>
             </div>
           </Section>

@@ -7,12 +7,45 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Image,
-  Video,
-  GripVertical,
+  ImageIcon,
   Eye,
   EyeOff,
+  UploadCloud,
+  X,
+  Wand2,
 } from "lucide-react";
+
+const FIELD_CLS =
+  "w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#078DD4] focus:bg-white transition-all";
+const LABEL_CLS =
+  "block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5";
+
+const SAMPLE_BANNERS = [
+  {
+    title: "Luxury Homes in Noida",
+    subtitle: "Discover world-class living at Sector 150",
+    ctaText: "Explore Projects",
+    ctaLink: "/projects",
+    order: 1,
+    mediaUrl: "https://picsum.photos/seed/lotus-banner1/1200/600",
+  },
+  {
+    title: "Smart Investment Opportunities",
+    subtitle: "RERA-approved projects with assured returns",
+    ctaText: "View Listings",
+    ctaLink: "/projects",
+    order: 2,
+    mediaUrl: "https://picsum.photos/seed/lotus-banner2/1200/600",
+  },
+  {
+    title: "Trusted Since 2008",
+    subtitle: "2,500+ happy families across 25+ completed projects",
+    ctaText: "Our Story",
+    ctaLink: "/about",
+    order: 3,
+    mediaUrl: "https://picsum.photos/seed/lotus-banner3/1200/600",
+  },
+];
 
 function Toast({ msg, type }) {
   if (!msg) return null;
@@ -74,6 +107,8 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
   });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(initial?.media || "");
+  const [sampleMediaUrl, setSampleMediaUrl] = useState("");
+  const [sampleIdx, setSampleIdx] = useState(0);
   const fileRef = useRef();
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -82,149 +117,155 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
     const f = e.target.files[0];
     if (!f) return;
     setFile(f);
+    setSampleMediaUrl("");
     setPreview(URL.createObjectURL(f));
     set("type", f.type.startsWith("video/") ? "video" : "image");
   };
 
+  const clearMedia = (e) => {
+    e.stopPropagation();
+    setFile(null);
+    setSampleMediaUrl("");
+    setPreview("");
+  };
+
+  const loadSample = () => {
+    const s = SAMPLE_BANNERS[sampleIdx % SAMPLE_BANNERS.length];
+    setForm((f) => ({
+      ...f,
+      title: s.title,
+      subtitle: s.subtitle,
+      ctaText: s.ctaText,
+      ctaLink: s.ctaLink,
+      order: s.order,
+      type: "image",
+    }));
+    setSampleMediaUrl(s.mediaUrl);
+    setPreview(s.mediaUrl);
+    setFile(null);
+    setSampleIdx((i) => i + 1);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!initial && !file) return alert("Please select an image or video.");
+    if (!initial && !file && !sampleMediaUrl) return alert("Please select an image or video.");
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => fd.append(k, v));
     if (file) fd.append("media", file);
+    else if (!file && sampleMediaUrl) fd.append("mediaUrl", sampleMediaUrl);
     onSave(fd);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 my-4">
-        <h2 className="text-base font-bold text-slate-900 mb-5">
-          {initial ? "Edit Banner" : "Add Banner"}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Media Upload */}
-          <div
-            onClick={() => fileRef.current.click()}
-            className="border-2 border-dashed border-slate-200 rounded-xl overflow-hidden cursor-pointer hover:border-[#078DD4] transition-colors"
-            style={{ minHeight: 160 }}
-          >
-            {preview ? (
-              form.type === "video" ? (
-                <video
-                  src={preview}
-                  className="w-full h-40 object-cover"
-                  muted
-                />
-              ) : (
-                <img
-                  src={preview}
-                  className="w-full h-40 object-cover"
-                  alt="preview"
-                />
-              )
-            ) : (
-              <div className="h-40 flex flex-col items-center justify-center gap-2 text-slate-400">
-                <Image size={28} />
-                <span className="text-sm">Click to upload image or video</span>
-              </div>
-            )}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*,video/*"
-              className="hidden"
-              onChange={handleFile}
-            />
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg my-4">
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">
+              {initial ? "Edit Banner" : "Add Banner"}
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {initial ? "Update this slide's content" : "Add a new hero slide"}
+            </p>
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">
-                Title
-              </label>
-              <input
-                value={form.title}
-                onChange={(e) => set("title", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#078DD4]"
-                placeholder="Slide title"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">
-                Subtitle
-              </label>
-              <input
-                value={form.subtitle}
-                onChange={(e) => set("subtitle", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#078DD4]"
-                placeholder="Slide subtitle"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">
-                CTA Text
-              </label>
-              <input
-                value={form.ctaText}
-                onChange={(e) => set("ctaText", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#078DD4]"
-                placeholder="e.g. Explore Now"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">
-                CTA Link
-              </label>
-              <input
-                value={form.ctaLink}
-                onChange={(e) => set("ctaLink", e.target.value)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#078DD4]"
-                placeholder="/projects"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">
-                Order
-              </label>
-              <input
-                type="number"
-                value={form.order}
-                onChange={(e) => set("order", parseInt(e.target.value))}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#078DD4]"
-                min={0}
-              />
-            </div>
-            <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.isActive}
-                  onChange={(e) => set("isActive", e.target.checked)}
-                  className="w-4 h-4 accent-[#078DD4]"
-                />
-                <span className="text-sm text-slate-700">Active</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-2">
+          {!initial && (
             <button
               type="button"
-              onClick={onCancel}
-              className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              onClick={loadSample}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#078DD4] bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-lg transition-colors"
             >
+              <Wand2 size={12} />
+              {sampleIdx > 0 ? "Try another" : "Load sample"}
+            </button>
+          )}
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {/* Media upload zone */}
+          <div>
+            <label className={LABEL_CLS}>Banner Image / Video</label>
+            {preview ? (
+              <div className="relative rounded-xl overflow-hidden border border-slate-200">
+                <img src={preview} alt="preview" className="w-full object-cover rounded-xl" style={{ height: 180 }} />
+                <button
+                  type="button"
+                  onClick={clearMedia}
+                  className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/50 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-colors"
+                >
+                  <X size={13} />
+                </button>
+                {sampleMediaUrl && (
+                  <span className="absolute bottom-2.5 left-2.5 bg-black/60 text-white text-[10px] font-semibold px-2 py-0.5 rounded">
+                    Sample image · replace with your own
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div
+                onClick={() => fileRef.current.click()}
+                className="border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40 transition-all cursor-pointer"
+                style={{ height: 160 }}
+              >
+                <div className="h-full flex flex-col items-center justify-center gap-2 text-slate-400">
+                  <UploadCloud size={26} />
+                  <p className="text-sm font-medium text-slate-500">Drop or click to upload</p>
+                  <p className="text-xs text-slate-400">JPG, PNG, WebP, MP4 · max 10 MB</p>
+                </div>
+              </div>
+            )}
+            <input ref={fileRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFile} />
+          </div>
+
+          {/* Text fields */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={LABEL_CLS}>Title</label>
+              <input value={form.title} onChange={(e) => set("title", e.target.value)} className={FIELD_CLS} placeholder="Slide headline" />
+            </div>
+            <div>
+              <label className={LABEL_CLS}>Subtitle</label>
+              <input value={form.subtitle} onChange={(e) => set("subtitle", e.target.value)} className={FIELD_CLS} placeholder="Supporting text" />
+            </div>
+            <div>
+              <label className={LABEL_CLS}>CTA Text</label>
+              <input value={form.ctaText} onChange={(e) => set("ctaText", e.target.value)} className={FIELD_CLS} placeholder="e.g. Explore Now" />
+            </div>
+            <div>
+              <label className={LABEL_CLS}>CTA Link</label>
+              <input value={form.ctaLink} onChange={(e) => set("ctaLink", e.target.value)} className={FIELD_CLS} placeholder="/projects" />
+            </div>
+            <div>
+              <label className={LABEL_CLS}>Display Order</label>
+              <input type="number" value={form.order} onChange={(e) => set("order", parseInt(e.target.value) || 0)} className={FIELD_CLS} min={0} />
+            </div>
+            <div className="flex items-end pb-1">
+              <button
+                type="button"
+                onClick={() => set("isActive", !form.isActive)}
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all ${form.isActive ? "border-[#078DD4] bg-sky-50 text-[#078DD4]" : "border-slate-200 bg-slate-50 text-slate-500"}`}
+              >
+                <span>Active</span>
+                <span className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.isActive ? "bg-[#078DD4]" : "bg-slate-300"}`}>
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${form.isActive ? "translate-x-4" : "translate-x-1"}`} />
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onCancel} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
               style={{ background: "#078DD4" }}
             >
-              {saving && (
-                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              )}
-              {saving ? "Saving…" : "Save Banner"}
+              {saving && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+              {saving ? "Saving…" : initial ? "Save Changes" : "Add Banner"}
             </button>
           </div>
         </form>
@@ -369,7 +410,7 @@ function BannersPage() {
           </div>
         ) : banners.length === 0 ? (
           <div className="text-center py-20 text-slate-400">
-            <Image size={40} className="mx-auto mb-3 opacity-30" />
+            <ImageIcon size={40} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">No banners yet. Add your first one.</p>
           </div>
         ) : (

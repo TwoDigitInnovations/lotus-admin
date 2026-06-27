@@ -2,12 +2,14 @@ import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { createBlog, updateBlog } from "@/redux/actions/blogActions";
-import { ArrowLeft, UploadCloud, Plus, Trash2, Globe, X } from "lucide-react";
+import { ArrowLeft, UploadCloud, X } from "lucide-react";
+import RichEditor from "@/components/RichEditor";
 
 const toSlug = (str) =>
   str.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
 
-const FIELD_CLS = "w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#078DD4] focus:bg-white transition-all";
+const FIELD_CLS =
+  "w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#078DD4] focus:bg-white transition-all";
 const LABEL_CLS = "block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5";
 const ERR_CLS = "text-red-500 text-xs mt-1";
 
@@ -39,7 +41,9 @@ function UploadZone({ preview, onChange, onClear }) {
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => { e.preventDefault(); setDragging(false); handle(e.dataTransfer.files[0]); }}
         onClick={() => inputRef.current.click()}
-        className={`rounded-xl border-2 border-dashed transition-all cursor-pointer py-10 text-center ${dragging ? "border-[#078DD4] bg-sky-50" : "border-slate-200 bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40"}`}
+        className={`rounded-xl border-2 border-dashed transition-all cursor-pointer py-10 text-center ${
+          dragging ? "border-[#078DD4] bg-sky-50" : "border-slate-200 bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40"
+        }`}
       >
         <UploadCloud size={24} className="text-slate-300 mx-auto mb-2" />
         <p className="text-sm font-medium text-slate-500">Drop image or click to browse</p>
@@ -73,11 +77,16 @@ export default function BlogPostForm({ initialData, blogId }) {
   const router = useRouter();
   const isEdit = !!blogId;
 
+  // Join existing paragraph array into single HTML string for rich editor
+  const initialContent = initialData?.content?.length
+    ? initialData.content.join("<br><br>")
+    : "";
+
   const [form, setForm] = useState(() => ({
     title: initialData?.title || "",
     slug: initialData?.slug || "",
     description: initialData?.description || "",
-    content: initialData?.content?.length ? initialData.content : [""],
+    content: initialContent,
     isPublished: initialData?.isPublished || false,
     imageFile: null,
     imagePreview: initialData?.image || "",
@@ -99,10 +108,6 @@ export default function BlogPostForm({ initialData, blogId }) {
     set("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
   };
 
-  const addParagraph = () => set("content", [...form.content, ""]);
-  const removeParagraph = (i) => set("content", form.content.filter((_, idx) => idx !== i));
-  const updateParagraph = (i, val) => set("content", form.content.map((p, idx) => idx === i ? val : p));
-
   const validate = () => {
     const e = {};
     if (!form.title.trim()) e.title = "Title is required";
@@ -122,7 +127,8 @@ export default function BlogPostForm({ initialData, blogId }) {
       fd.append("slug", form.slug.trim());
       fd.append("description", form.description.trim());
       fd.append("isPublished", form.isPublished);
-      form.content.filter((p) => p.trim()).forEach((p) => fd.append("content", p));
+      // Send rich HTML content as single array element
+      if (form.content.trim()) fd.append("content", form.content);
       if (form.imageFile) fd.append("image", form.imageFile);
 
       const res = isEdit
@@ -150,12 +156,14 @@ export default function BlogPostForm({ initialData, blogId }) {
           </button>
           <div>
             <h1 className="text-xl font-bold text-slate-900">{isEdit ? "Edit Post" : "New Blog Post"}</h1>
-            <p className="text-sm text-slate-400 mt-0.5">{isEdit ? "Update this article" : "Write and publish a new article"}</p>
+            <p className="text-sm text-slate-400 mt-0.5">
+              {isEdit ? "Update this article" : "Write and publish a new article"}
+            </p>
           </div>
         </div>
 
         <div className="space-y-5">
-          {/* Title & Slug */}
+          {/* Title, Slug & SEO */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <div>
               <label className={LABEL_CLS}>Title <span className="text-red-400 normal-case font-normal">*</span></label>
@@ -170,27 +178,25 @@ export default function BlogPostForm({ initialData, blogId }) {
             </div>
             <div>
               <label className={LABEL_CLS}>Slug <span className="text-red-400 normal-case font-normal">*</span></label>
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 text-sm font-mono">/</span>
-                <input
-                  type="text"
-                  placeholder="post-url-slug"
-                  value={form.slug}
-                  onChange={handleSlug}
-                  className={`${FIELD_CLS} flex-1 ${errors.slug ? "border-red-300 bg-red-50" : ""}`}
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="post-url-slug"
+                value={form.slug}
+                onChange={handleSlug}
+                className={`${FIELD_CLS} ${errors.slug ? "border-red-300 bg-red-50" : ""}`}
+              />
               {errors.slug && <p className={ERR_CLS}>{errors.slug}</p>}
             </div>
             <div>
-              <label className={LABEL_CLS}>Description</label>
+              <label className={LABEL_CLS}>SEO Description</label>
               <textarea
-                placeholder="Short description for SEO and preview…"
+                placeholder="Short description for search results and card previews…"
                 value={form.description}
                 onChange={(e) => set("description", e.target.value)}
                 rows={3}
                 className={`${FIELD_CLS} resize-none`}
               />
+              <p className="text-xs text-slate-400 mt-1">Plain text · 120–160 characters recommended</p>
             </div>
           </div>
 
@@ -204,40 +210,20 @@ export default function BlogPostForm({ initialData, blogId }) {
             />
           </div>
 
-          {/* Content paragraphs */}
+          {/* Rich text content */}
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <label className={`${LABEL_CLS} mb-0`}>Content Paragraphs</label>
-              <button
-                onClick={addParagraph}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ background: "#078DD4" }}
-              >
-                <Plus size={12} /> Add Paragraph
-              </button>
+            <div className="flex items-center justify-between mb-3">
+              <label className={`${LABEL_CLS} mb-0`}>Article Content</label>
+              <span className="text-xs text-slate-400">Supports rich formatting</span>
             </div>
-            <div className="space-y-3">
-              {form.content.map((p, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <span className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-400 shrink-0 mt-2.5">{i + 1}</span>
-                  <textarea
-                    value={p}
-                    onChange={(e) => updateParagraph(i, e.target.value)}
-                    placeholder={`Paragraph ${i + 1}…`}
-                    rows={3}
-                    className={`${FIELD_CLS} flex-1 resize-y`}
-                  />
-                  {form.content.length > 1 && (
-                    <button
-                      onClick={() => removeParagraph(i)}
-                      className="mt-2.5 w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 transition-colors shrink-0"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+            <RichEditor
+              key={isEdit ? blogId : "new-blog"}
+              value={form.content}
+              onChange={(v) => set("content", v)}
+              height={420}
+              toolbar="full"
+              placeholder="Write the full article here — use headings, bold, lists and links…"
+            />
           </div>
 
           {/* Publish toggle */}

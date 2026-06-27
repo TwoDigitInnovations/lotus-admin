@@ -84,6 +84,7 @@ const STORY_SAMPLE = {
     { value: "15", label: "Years of Excellence" },
     { value: "₹0", label: "Pending Complaints" },
   ],
+  imageUrl: "https://picsum.photos/seed/lotus-office/800/560",
 };
 
 const COMMITMENTS_SAMPLE = [
@@ -98,11 +99,13 @@ const LEADERS_SAMPLE = [
     name: "Rajiv Sharma",
     role: "Managing Director",
     description: "<p>Rajiv founded Lotusss in 2008 with a vision to redefine affordable luxury in Noida. With a background in civil engineering and an MBA from IIM Ahmedabad, he has steered the company through 25+ successful projects.</p><p>Under his leadership, Lotusss has received multiple national awards for quality construction and customer satisfaction.</p>",
+    image: "https://i.pravatar.cc/300?img=60",
   },
   {
     name: "Priya Agarwal",
     role: "Chief Design Officer",
     description: "<p>Priya heads the design and architecture team at Lotusss. A graduate of the School of Planning and Architecture, Delhi, she brings a unique blend of functionality and aesthetics to every project.</p><p>Her design philosophy: <em>A home should breathe, not just stand.</em></p>",
+    image: "https://i.pravatar.cc/300?img=47",
   },
 ];
 
@@ -179,16 +182,24 @@ function StoryTab({ data, onSaved, router }) {
       fd.append("description", form.description);
       fd.append("highlights", JSON.stringify(form.highlights));
       if (file) fd.append("image", file);
+      // Send URL directly when a sample/existing URL is set but no new file chosen
+      else if (!file && preview && !preview.startsWith("blob:")) fd.append("imageUrl", preview);
       const res = await ApiFormData("put", "about-page/story", fd, router);
       if (res?.status) onSaved("Story section saved!");
       else onSaved(res?.message || "Failed", "error");
     } finally { setSaving(false); }
   };
 
+  const loadStorySample = () => {
+    const { imageUrl, ...fields } = STORY_SAMPLE;
+    setForm((f) => ({ ...f, ...fields }));
+    if (imageUrl) { setPreview(imageUrl); setFile(null); }
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex justify-end">
-        <SampleBtn onClick={() => setForm({ ...form, ...STORY_SAMPLE, description: STORY_SAMPLE.description })} />
+        <SampleBtn onClick={loadStorySample} />
       </div>
 
       <Field label="Section Heading">
