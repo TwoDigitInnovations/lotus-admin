@@ -174,17 +174,17 @@ function BlogsPage() {
       )}
 
       <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Blog Posts</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Blog Posts</h1>
               <p className="text-sm text-slate-400 mt-0.5">{total} post{total !== 1 ? "s" : ""} total</p>
             </div>
-            <Link href="/blogs/add">
-              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
-                <Plus size={16} /> Write Post
+            <Link href="/blogs/add" className="shrink-0">
+              <button className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
+                <Plus size={16} /> <span className="hidden sm:inline">Write Post</span><span className="sm:hidden">Write</span>
               </button>
             </Link>
           </div>
@@ -197,13 +197,13 @@ function BlogsPage() {
           </div>
 
           {/* Filter bar */}
-          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
               {TABS.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setFilter(t.id)}
-                  className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${filter === t.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                  className={`px-3 sm:px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${filter === t.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
                   {t.label}
                 </button>
@@ -213,7 +213,7 @@ function BlogsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search posts…"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none text-slate-800 placeholder-slate-400 w-52 focus:border-[#078DD4] transition-colors"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none text-slate-800 placeholder-slate-400 w-full sm:w-52 focus:border-[#078DD4] transition-colors"
             />
           </div>
 

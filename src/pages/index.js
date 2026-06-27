@@ -109,7 +109,7 @@ function Dashboard() {
     <>
       <Head><title>Dashboard | Lotusss Admin</title></Head>
       <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
           {/* Header */}
           <div className="flex items-start justify-between flex-wrap gap-3">
@@ -118,9 +118,9 @@ function Dashboard() {
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#078DD418" }}>
                   <LayoutDashboard size={16} style={{ color: "#078DD4" }} />
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Dashboard</h1>
               </div>
-              <p className="text-sm text-slate-400">Welcome back, <span className="font-semibold text-slate-600">{name.split(" ")[0]}</span> &middot; {today}</p>
+              <p className="text-xs sm:text-sm text-slate-400">Welcome back, <span className="font-semibold text-slate-600">{name.split(" ")[0]}</span> &middot; {today}</p>
             </div>
           </div>
 
@@ -173,14 +173,14 @@ function Dashboard() {
           </div>
 
           {/* Projects Breakdown */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
+          <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5">
             <SectionHeader title="Projects Breakdown" href="/projects" />
             {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} h="h-16" />)}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 <MiniStat label="Residential" value={projects.residential} icon={Home} color="#0d1f35" />
                 <MiniStat label="Commercial" value={projects.commercial} icon={Briefcase} color="#078DD4" />
                 <MiniStat label="Under Construction" value={projects.underConstruction} icon={HardHat} color="#0d1f35" />
@@ -333,21 +333,21 @@ function Dashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
+          <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5">
             <h2 className="text-sm font-bold text-slate-800 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {[
                 { label: "Add Project", href: "/projects/add", icon: Building2, color: "#0d1f35" },
                 { label: "New Blog Post", href: "/blogs/add", icon: FileText, color: "#078DD4" },
-                { label: "Upload to Gallery", href: "/gallery/add", icon: Image, color: "#0d1f35" },
+                { label: "Gallery Upload", href: "/gallery/add", icon: Image, color: "#0d1f35" },
                 { label: "View Contacts", href: "/contacts", icon: MessageSquare, color: "#078DD4" },
               ].map((q) => (
                 <Link key={q.href} href={q.href}>
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 hover:border-[#078DD4] hover:shadow-sm transition-all group cursor-pointer">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: q.color + "18" }}>
-                      <q.icon size={15} style={{ color: q.color }} />
+                  <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 rounded-xl border border-slate-200 hover:border-[#078DD4] hover:shadow-sm transition-all group cursor-pointer">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: q.color + "18" }}>
+                      <q.icon size={14} style={{ color: q.color }} />
                     </div>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">{q.label}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-slate-900 leading-tight">{q.label}</span>
                   </div>
                 </Link>
               ))}

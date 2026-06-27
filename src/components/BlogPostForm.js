@@ -144,7 +144,7 @@ export default function BlogPostForm({ initialData, blogId }) {
 
   return (
     <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-      <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

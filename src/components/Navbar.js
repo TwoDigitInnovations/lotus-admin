@@ -148,7 +148,7 @@ export default function Navbar({ setOpen }) {
             <img
               src="/images/logo.png"
               alt="Lotusss Logo"
-              className="w-14 h-14 rounded-full object-cover shrink-0"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
             />
             <span className="text-white font-semibold text-sm tracking-wide hidden sm:block">
               Lotusss

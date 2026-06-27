@@ -367,7 +367,7 @@ function CommitmentsTab({ data, onSaved, router }) {
                 </button>
               </div>
               <div className="p-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">Icon name</label>
                     <input

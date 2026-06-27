@@ -86,7 +86,7 @@ function GalleryCard({ item, onEdit, onDelete, onToggleActive, toggling }) {
           {item.isActive ? "Active" : "Hidden"}
         </span>
 
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5">
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex items-center justify-center gap-2.5">
           <button
             onClick={() => onEdit(item)}
             className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-slate-700 hover:text-[#078DD4] shadow-sm transition-colors"
@@ -115,6 +115,19 @@ function GalleryCard({ item, onEdit, onDelete, onToggleActive, toggling }) {
           <p className="text-xs text-slate-400 truncate">{item.location || "—"}</p>
           <span className="text-[11px] text-slate-300 font-mono">#{item.order ?? 0}</span>
         </div>
+      </div>
+      {/* Mobile-only action buttons */}
+      <div className="sm:hidden px-3 pb-3 flex gap-2 border-t border-slate-100 pt-2">
+        <button onClick={() => onEdit(item)} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:border-[#078DD4] hover:text-[#078DD4] transition-colors">
+          <Pencil size={11} /> Edit
+        </button>
+        <button onClick={() => onToggleActive(item)} disabled={toggling === item._id} className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50 ${item.isActive ? "border-slate-200 text-slate-600" : "border-slate-200 text-slate-400"}`}>
+          {item.isActive ? <EyeOff size={11} /> : <Eye size={11} />}
+          {item.isActive ? "Hide" : "Show"}
+        </button>
+        <button onClick={() => onDelete(item._id)} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-red-400 hover:border-red-300 transition-colors">
+          <Trash2 size={11} /> Del
+        </button>
       </div>
     </div>
   );
@@ -234,18 +247,18 @@ function Gallery(props) {
       )}
 
       <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Gallery</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Gallery</h1>
               <p className="text-sm text-slate-400 mt-0.5">{total} items total</p>
             </div>
-            <Link href="/gallery/add">
-              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
+            <Link href="/gallery/add" className="shrink-0">
+              <button className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
                 <Plus size={16} />
-                Add Item
+                <span className="hidden sm:inline">Add Item</span><span className="sm:hidden">Add</span>
               </button>
             </Link>
           </div>
@@ -259,7 +272,7 @@ function Gallery(props) {
           </div>
 
           {/* Filter bar */}
-          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
             <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
               {TABS.map((t) => (
                 <button

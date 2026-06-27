@@ -99,15 +99,16 @@ function Profile(props) {
     : user?.name?.charAt(0).toUpperCase() || "A";
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-slate-50 px-4 md:px-6 py-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="max-w-2xl">
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-[#0d1f35] m-0">My Profile</h1>
-          <p className="text-sm text-slate-400 mt-1">Manage your account information</p>
-        </div>
+          <div className="mb-6">
+            <h1 className="text-2xl font-extrabold text-[#0d1f35] m-0">My Profile</h1>
+            <p className="text-sm text-slate-400 mt-1">Manage your account information</p>
+          </div>
 
-        <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.07)]">
+          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.07)]">
 
           {/* banner */}
           <div className="h-24 bg-linear-to-br from-[#0d1f35] to-[#078DD4] relative">
@@ -117,7 +118,7 @@ function Profile(props) {
             </span>
           </div>
 
-          <div className="px-7 pb-7">
+          <div className="px-4 sm:px-7 pb-5 sm:pb-7">
 
             {/* avatar */}
             <div className="mt-4 mb-4">
@@ -127,12 +128,12 @@ function Profile(props) {
             </div>
 
             {/* name / email + action buttons */}
-            <div className="flex justify-between items-start mb-5">
-              <div>
-                <div className="text-lg font-bold text-[#0d1f35]">
+            <div className="flex flex-wrap justify-between items-start mb-5 gap-3">
+              <div className="min-w-0">
+                <div className="text-lg font-bold text-[#0d1f35] truncate">
                   {profile.fullname || "Your Name"}
                 </div>
-                <div className="text-sm text-slate-400 mt-0.5">
+                <div className="text-sm text-slate-400 mt-0.5 truncate">
                   {profile.email || "your@email.com"}
                 </div>
               </div>
@@ -140,26 +141,26 @@ function Profile(props) {
               {!editMode ? (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors mt-1"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors shrink-0"
                 >
                   <Pencil size={15} />
                   Edit Profile
                 </button>
               ) : (
-                <div className="flex gap-2 mt-1">
+                <div className="flex gap-2 shrink-0">
                   <button
                     onClick={handleCancel}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-colors"
                   >
                     <X size={14} />
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#078DD4] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_12px_rgba(7,141,212,0.3)] hover:bg-[#0678b8] transition-colors"
                   >
                     <Check size={14} />
-                    Save Changes
+                    Save
                   </button>
                 </div>
               )}
@@ -235,6 +236,7 @@ function Profile(props) {
 
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

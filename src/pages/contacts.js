@@ -421,7 +421,7 @@ function Contacts(props) {
         </div>
       )}
 
-      <div className="p-4 md:p-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -439,7 +439,7 @@ function Contacts(props) {
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {[
             { key: "new", ...STATUS_CONFIG.new },
             { key: "read", ...STATUS_CONFIG.read },
@@ -450,26 +450,26 @@ function Contacts(props) {
               <button
                 key={s.key}
                 onClick={() => setActiveStatus(s.key === activeStatus ? "" : s.key)}
-                className={`bg-white rounded-2xl border p-4 text-left transition-all hover:shadow-sm ${
+                className={`bg-white rounded-2xl border p-3 sm:p-4 text-left transition-all hover:shadow-sm ${
                   activeStatus === s.key ? "border-[#078DD4] shadow-sm" : "border-slate-100"
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                  <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wide">
                     {s.label}
                   </span>
-                  <div className={`p-1.5 rounded-lg ${s.bg}`}>
-                    <Icon size={14} className={s.text} />
+                  <div className={`p-1 sm:p-1.5 rounded-lg ${s.bg}`}>
+                    <Icon size={12} className={s.text} />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{counts[s.key] ?? 0}</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">{counts[s.key] ?? 0}</p>
               </button>
             );
           })}
         </div>
 
         {/* Status filter tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-fit overflow-x-auto">
           {STATUSES.map((s) => (
             <button
               key={s.value}

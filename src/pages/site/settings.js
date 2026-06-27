@@ -421,7 +421,7 @@ function WhyChooseUsTab({ data, onSaved, router }) {
                   </button>
                 </div>
                 <div className="p-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs text-slate-500 mb-1 block">
                         Icon name
@@ -601,7 +601,7 @@ function TestimonialsTab({ data, onSaved, router }) {
                     className="hidden"
                     onChange={(e) => handleImg(i, e)}
                   />
-                  <div className="flex-1 grid grid-cols-2 gap-2">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <input
                       value={t.name}
                       onChange={(e) => update(i, "name", e.target.value)}
@@ -669,39 +669,12 @@ function TestimonialsTab({ data, onSaved, router }) {
 // ─── Footer Tab ───────────────────────────────────────────────────────────────
 
 function FooterTab({ data, onSaved, router }) {
-  const [form, setForm] = useState({
-    description: "",
-    phone: "",
-    email: "",
-    address: "",
-    whatsapp: "",
-    socialLinks: { instagram: "", facebook: "", twitter: "" },
-    ...data,
-    socialLinks: {
-      instagram: "",
-      facebook: "",
-      twitter: "",
-      ...data?.socialLinks,
-    },
-  });
+  const blank = { description: "", phone: "", altPhone: "", email: "", website: "", address: "", addressLine2: "", whatsapp: "", socialLinks: { instagram: "", facebook: "", twitter: "" } };
+  const [form, setForm] = useState({ ...blank, ...data, socialLinks: { ...blank.socialLinks, ...data?.socialLinks } });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setForm({
-      description: "",
-      phone: "",
-      email: "",
-      address: "",
-      whatsapp: "",
-      socialLinks: { instagram: "", facebook: "", twitter: "" },
-      ...data,
-      socialLinks: {
-        instagram: "",
-        facebook: "",
-        twitter: "",
-        ...data?.socialLinks,
-      },
-    });
+    setForm({ ...blank, ...data, socialLinks: { ...blank.socialLinks, ...data?.socialLinks } });
   }, [data]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -750,21 +723,17 @@ function FooterTab({ data, onSaved, router }) {
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            ["phone", "Phone Number", "+91 98765 43210"],
+            ["phone", "Primary Phone", "+91 98765 43210"],
+            ["altPhone", "Alternate Phone", "+91 98765 43211"],
             ["email", "Email Address", "info@lotusss.com"],
+            ["website", "Website URL", "www.lotusssinfra.com"],
             ["whatsapp", "WhatsApp Number", "919876543210"],
             ["address", "Office Address", "Sector 94, Noida, UP"],
+            ["addressLine2", "Address Line 2", "Noida Expressway, UP 201305"],
           ].map(([k, label, ph]) => (
             <div key={k}>
-              <label className="text-xs text-slate-500 mb-1 block">
-                {label}
-              </label>
-              <input
-                value={form[k]}
-                onChange={(e) => set(k, e.target.value)}
-                className={INPUT}
-                placeholder={ph}
-              />
+              <label className="text-xs text-slate-500 mb-1 block">{label}</label>
+              <input value={form[k] || ""} onChange={(e) => set(k, e.target.value)} className={INPUT} placeholder={ph} />
             </div>
           ))}
         </div>
@@ -800,79 +769,232 @@ function FooterTab({ data, onSaved, router }) {
   );
 }
 
-// ─── Privacy Policy Tab ───────────────────────────────────────────────────────
+// ─── General Tab (Logo, Stats, Contact Section Image) ─────────────────────────
 
-function PrivacyPolicyTab({ data, onSaved, router }) {
-  const [content, setContent] = useState(data || "");
+function GeneralTab({ data, onSaved, router }) {
+  const [logoUrl, setLogoUrl] = useState(data?.logo || "");
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(data?.logo || "");
+  const [contactImg, setContactImg] = useState(data?.contactSectionImage || "");
+  const [stats, setStats] = useState(
+    Array.isArray(data?.stats) && data.stats.length > 0
+      ? data.stats
+      : [{ value: "500+", label: "Units Delivered" }, { value: "15 Years", label: "Of Excellence" }, { value: "28 Cities", label: "National Footprint" }]
+  );
   const [saving, setSaving] = useState(false);
+  const logoRef = useRef();
 
-  useEffect(() => { setContent(data || ""); }, [data]);
+  useEffect(() => {
+    setLogoUrl(data?.logo || "");
+    setLogoPreview(data?.logo || "");
+    setContactImg(data?.contactSectionImage || "");
+    if (Array.isArray(data?.stats) && data.stats.length > 0) setStats(data.stats);
+  }, [data]);
+
+  const handleLogoFile = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setLogoFile(f);
+    setLogoPreview(URL.createObjectURL(f));
+  };
+
+  const updateStat = (i, field, val) => setStats((prev) => prev.map((s, idx) => idx === i ? { ...s, [field]: val } : s));
+  const addStat = () => setStats((prev) => [...prev, { value: "", label: "" }]);
+  const removeStat = (i) => setStats((prev) => prev.filter((_, idx) => idx !== i));
 
   const save = async () => {
     setSaving(true);
     try {
-      const res = await Api("put", "site-settings/privacy-policy", { content }, router);
-      if (res?.status) onSaved("Privacy Policy saved!");
+      const fd = new FormData();
+      if (logoFile) fd.append("logo", logoFile);
+      else if (logoUrl) fd.append("logoUrl", logoUrl);
+      fd.append("stats", JSON.stringify(stats));
+      fd.append("contactSectionImageUrl", contactImg);
+      const res = await ApiFormData("put", "site-settings/general", fd, router);
+      if (res?.status) onSaved("General settings saved!");
       else onSaved(res?.message || "Failed", "error");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
   return (
-    <div className="space-y-5">
-      <p className="text-xs text-slate-400">
-        This content is displayed on the <strong>/privacy-policy</strong> page when a custom version is saved. Leave empty to show the default static content.
-      </p>
-      <Field label="Privacy Policy Content">
-        <RichEditor
-          key={typeof data === "string" ? data.slice(0, 20) : "pp"}
-          value={content}
-          onChange={setContent}
-          height={420}
-          toolbar="full"
-          placeholder="Write your Privacy Policy here…"
-        />
+    <div className="space-y-6">
+      {/* Logo */}
+      <div>
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-2">Site Logo</label>
+        <div className="flex items-center gap-4 mb-3">
+          {logoPreview && (
+            <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 shrink-0">
+              <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <button onClick={() => logoRef.current?.click()} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 hover:border-[#078DD4] hover:text-[#078DD4] transition-all">
+            <UploadCloud size={15} /> Upload Logo
+          </button>
+          <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
+        </div>
+        <Field label="Or paste logo URL">
+          <input value={logoUrl} onChange={(e) => { setLogoUrl(e.target.value); setLogoPreview(e.target.value); setLogoFile(null); }} className={INPUT} placeholder="https://..." />
+        </Field>
+      </div>
+
+      {/* Contact Section Image */}
+      <Field label="Contact Section Image (home page right side)" hint="URL">
+        <input value={contactImg} onChange={(e) => setContactImg(e.target.value)} className={INPUT} placeholder="https://..." />
+        {contactImg && <img src={contactImg} alt="preview" className="mt-2 h-24 rounded-xl object-cover" />}
       </Field>
+
+      {/* Stats */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Company Stats</label>
+          <button onClick={addStat} className="flex items-center gap-1 text-xs font-semibold text-[#078DD4] hover:text-sky-700 transition-colors">
+            <Plus size={13} /> Add Stat
+          </button>
+        </div>
+        <div className="flex flex-col gap-3">
+          {stats.map((s, i) => (
+            <div key={i} className="flex gap-2 items-center">
+              <input value={s.value} onChange={(e) => updateStat(i, "value", e.target.value)} className={INPUT + " w-36"} placeholder="500+" />
+              <input value={s.label} onChange={(e) => updateStat(i, "label", e.target.value)} className={INPUT} placeholder="Units Delivered" />
+              <button onClick={() => removeStat(i)} className="p-2 text-red-400 hover:text-red-600 shrink-0"><Trash2 size={15} /></button>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <SaveBtn onClick={save} saving={saving} />
     </div>
   );
 }
 
-// ─── Terms of Service Tab ─────────────────────────────────────────────────────
+// ─── Section Headings Tab ─────────────────────────────────────────────────────
 
-function TermsTab({ data, onSaved, router }) {
-  const [content, setContent] = useState(data || "");
+function SectionHeadingsTab({ data, onSaved, router }) {
+  const [form, setForm] = useState({
+    ourProjects: "Our Projects",
+    recentBlogs: "Recent Blogs",
+    gallery: "Gallery",
+    contactSection: "Partner With Us",
+    leaders: "Our Leaders",
+    ...data,
+  });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { setContent(data || ""); }, [data]);
+  useEffect(() => {
+    if (data) setForm((f) => ({ ...f, ...data }));
+  }, [data]);
 
   const save = async () => {
     setSaving(true);
     try {
-      const res = await Api("put", "site-settings/terms", { content }, router);
-      if (res?.status) onSaved("Terms of Service saved!");
+      const res = await Api("put", "site-settings/section-headings", form, router);
+      if (res?.status) onSaved("Section headings saved!");
       else onSaved(res?.message || "Failed", "error");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
+  };
+
+  const fields = [
+    { key: "ourProjects", label: "Our Projects (home)" },
+    { key: "recentBlogs", label: "Recent Blogs (home)" },
+    { key: "gallery", label: "Gallery (home)" },
+    { key: "contactSection", label: "Contact Section (home)" },
+    { key: "leaders", label: "Our Leaders (about page)" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {fields.map(({ key, label }) => (
+        <Field key={key} label={label}>
+          <input value={form[key] || ""} onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))} className={INPUT} />
+        </Field>
+      ))}
+      <SaveBtn onClick={save} saving={saving} />
+    </div>
+  );
+}
+
+// ─── Page Banners Tab ─────────────────────────────────────────────────────────
+
+const PAGE_BANNER_FIELDS = [
+  { key: "projects", label: "Projects Page Banner" },
+  { key: "blog", label: "Blog Page Banner" },
+  { key: "gallery", label: "Gallery Page Banner" },
+  { key: "contact", label: "Contact Page Banner" },
+  { key: "privacyPolicy", label: "Privacy Policy Banner" },
+  { key: "termsOfService", label: "Terms of Service Banner" },
+];
+
+function PageBannersTab({ data, onSaved, router }) {
+  const [form, setForm] = useState({
+    projects: "", blog: "", gallery: "", contact: "", privacyPolicy: "", termsOfService: "",
+    ...data,
+  });
+  const [files, setFiles] = useState({});
+  const [previews, setPreviews] = useState({});
+  const [saving, setSaving] = useState(false);
+  const fileRefs = useRef({});
+
+  useEffect(() => {
+    if (data) setForm((f) => ({ ...f, ...data }));
+  }, [data]);
+
+  const handleFile = (key, e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFiles((prev) => ({ ...prev, [key]: f }));
+    setPreviews((prev) => ({ ...prev, [key]: URL.createObjectURL(f) }));
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      PAGE_BANNER_FIELDS.forEach(({ key }) => {
+        if (files[key]) fd.append(key, files[key]);
+        else fd.append(key + "Url", form[key] || "");
+      });
+      const res = await ApiFormData("put", "site-settings/page-banners", fd, router);
+      if (res?.status) onSaved("Page banners saved!");
+      else onSaved(res?.message || "Failed", "error");
+    } finally { setSaving(false); }
   };
 
   return (
     <div className="space-y-5">
-      <p className="text-xs text-slate-400">
-        This content is displayed on the <strong>/terms-of-service</strong> page when a custom version is saved. Leave empty to show the default static content.
-      </p>
-      <Field label="Terms of Service Content">
-        <RichEditor
-          key={typeof data === "string" ? data.slice(0, 20) : "tos"}
-          value={content}
-          onChange={setContent}
-          height={420}
-          toolbar="full"
-          placeholder="Write your Terms of Service here…"
-        />
-      </Field>
+      <p className="text-xs text-slate-400">Upload or paste an image URL for each page banner. Leave blank to use the default.</p>
+      {PAGE_BANNER_FIELDS.map(({ key, label }) => {
+        const preview = previews[key] || form[key];
+        return (
+          <Field key={key} label={label}>
+            <div className="flex gap-2">
+              <input
+                value={form[key] || ""}
+                onChange={(e) => { setForm((f) => ({ ...f, [key]: e.target.value })); setFiles((f) => ({ ...f, [key]: null })); setPreviews((f) => ({ ...f, [key]: null })); }}
+                className={INPUT + " flex-1"}
+                placeholder="https://..."
+              />
+              <button
+                type="button"
+                onClick={() => fileRefs.current[key]?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:border-[#078DD4] hover:text-[#078DD4] transition-all shrink-0"
+              >
+                <UploadCloud size={13} /> Upload
+              </button>
+              <input
+                ref={(el) => (fileRefs.current[key] = el)}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFile(key, e)}
+              />
+            </div>
+            {files[key] && (
+              <p className="text-[11px] text-emerald-600 mt-1 font-medium">Selected: {files[key].name}</p>
+            )}
+            {preview && <img src={preview} alt={label} className="mt-2 h-20 w-full object-cover rounded-xl" />}
+          </Field>
+        );
+      })}
       <SaveBtn onClick={save} saving={saving} />
     </div>
   );
@@ -880,7 +1002,7 @@ function TermsTab({ data, onSaved, router }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const TABS = ["Welcome", "Why Choose Us", "Testimonials", "Footer", "Privacy Policy", "Terms of Service"];
+const TABS = ["Welcome", "Why Choose Us", "Testimonials", "Footer", "General", "Section Headings", "Page Banners"];
 
 function SiteSettingsPage() {
   const router = useRouter();
@@ -907,16 +1029,18 @@ function SiteSettingsPage() {
     settings?.whyChooseUs,
     settings?.testimonials,
     settings?.footer,
-    settings?.privacyPolicy,
-    settings?.termsOfService,
+    { logo: settings?.logo, stats: settings?.stats, contactSectionImage: settings?.contactSectionImage },
+    settings?.sectionHeadings,
+    settings?.pageBanners,
   ];
   const TabComponents = [
     WelcomeTab,
     WhyChooseUsTab,
     TestimonialsTab,
     FooterTab,
-    PrivacyPolicyTab,
-    TermsTab,
+    GeneralTab,
+    SectionHeadingsTab,
+    PageBannersTab,
   ];
   const ActiveTab = TabComponents[tab];
 

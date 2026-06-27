@@ -193,17 +193,17 @@ function ProjectsPage() {
       )}
 
       <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Projects</h1>
               <p className="text-sm text-slate-400 mt-0.5">{total} project{total !== 1 ? "s" : ""} total</p>
             </div>
-            <Link href="/projects/add">
-              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
-                <Plus size={16} /> Add Project
+            <Link href="/projects/add" className="shrink-0">
+              <button className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm" style={{ background: "#078DD4" }}>
+                <Plus size={16} /> <span className="hidden sm:inline">Add Project</span><span className="sm:hidden">Add</span>
               </button>
             </Link>
           </div>
@@ -217,9 +217,9 @@ function ProjectsPage() {
           </div>
 
           {/* Filters */}
-          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-1 flex-wrap">
-              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1 flex-wrap">
                 {TABS_CAT.map((t) => (
                   <button
                     key={t.id}
@@ -230,7 +230,7 @@ function ProjectsPage() {
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1 flex-wrap">
                 {TABS_STATUS.map((t) => (
                   <button
                     key={t.id}
@@ -246,7 +246,7 @@ function ProjectsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search projects…"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none text-slate-800 placeholder-slate-400 w-52 focus:border-[#078DD4] transition-colors"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none text-slate-800 placeholder-slate-400 w-full sm:w-52 focus:border-[#078DD4] transition-colors"
             />
           </div>
 

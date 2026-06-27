@@ -218,7 +218,7 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
           </div>
 
           {/* Text fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={LABEL_CLS}>Title</label>
               <input value={form.title} onChange={(e) => set("title", e.target.value)} className={FIELD_CLS} placeholder="Slide headline" />
@@ -388,19 +388,19 @@ function BannersPage() {
       )}
 
       <div className="p-4 md:p-6 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-xl font-bold text-slate-900">Hero Banners</h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Manage home page banner slides (images &amp; videos)
+              Manage home page banner slides
             </p>
           </div>
           <button
             onClick={openAdd}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-white text-sm font-semibold shrink-0"
             style={{ background: "#078DD4" }}
           >
-            <Plus size={16} /> Add Banner
+            <Plus size={16} /> <span className="hidden sm:inline">Add Banner</span><span className="sm:hidden">Add</span>
           </button>
         </div>
 
