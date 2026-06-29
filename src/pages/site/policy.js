@@ -145,6 +145,8 @@ function PolicyPage() {
       } else {
         showToast(res?.message || "Failed to save", "error");
       }
+    } catch (err) {
+      showToast(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 

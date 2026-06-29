@@ -95,7 +95,10 @@ export default function RichEditor({
         value={local}
         config={config}
         tabIndex={1}
-        onChange={(c) => setLocal(c)}
+        onChange={(c) => {
+          setLocal(c);
+          onChange?.(c);
+        }}
         onBlur={(c) => {
           setLocal(c);
           onChange?.(c);

@@ -93,6 +93,7 @@ export default function BlogPostForm({ initialData, blogId }) {
   }));
   const [slugTouched, setSlugTouched] = useState(isEdit);
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -112,12 +113,14 @@ export default function BlogPostForm({ initialData, blogId }) {
     const e = {};
     if (!form.title.trim()) e.title = "Title is required";
     if (!form.slug.trim()) e.slug = "Slug is required";
+    if (!isEdit && !form.imageFile) e.imageFile = "Cover image is required";
     return e;
   };
 
   const handleSubmit = async () => {
     const e = validate();
     setErrors(e);
+    setApiError("");
     if (Object.keys(e).length) return;
 
     setSaving(true);
@@ -127,8 +130,7 @@ export default function BlogPostForm({ initialData, blogId }) {
       fd.append("slug", form.slug.trim());
       fd.append("description", form.description.trim());
       fd.append("isPublished", form.isPublished);
-      // Send rich HTML content as single array element
-      if (form.content.trim()) fd.append("content", form.content);
+      if (form.content) fd.append("content", form.content);
       if (form.imageFile) fd.append("image", form.imageFile);
 
       const res = isEdit
@@ -136,9 +138,9 @@ export default function BlogPostForm({ initialData, blogId }) {
         : await dispatch(createBlog(fd, router));
 
       if (res?.status) router.push("/blogs");
-      else alert(res?.data?.message || res?.message || "Something went wrong.");
+      else setApiError(res?.data?.message || res?.message || "Something went wrong.");
     } catch (err) {
-      alert(err?.message || "Something went wrong.");
+      setApiError(err?.message || "Something went wrong.");
     } finally { setSaving(false); }
   };
 
@@ -233,6 +235,13 @@ export default function BlogPostForm({ initialData, blogId }) {
             label="Publish"
             description="Make this post visible to the public"
           />
+
+          {/* Errors */}
+          {(apiError || errors.imageFile) && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+              {apiError || errors.imageFile}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

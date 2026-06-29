@@ -132,6 +132,7 @@ export default function ProjectForm({ initialData, projectId }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
@@ -144,15 +145,17 @@ export default function ProjectForm({ initialData, projectId }) {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim()) e.name = "Required";
-    if (!form.location.trim()) e.location = "Required";
-    if (!form.category) e.category = "Required";
+    if (!form.name.trim()) e.name = "Project name is required";
+    if (!form.location.trim()) e.location = "Location is required";
+    if (!form.category) e.category = "Category is required";
+    if (!isEdit && !form.imageFile) e.imageFile = "Cover image is required";
     return e;
   };
 
   const handleSubmit = async () => {
     const e = validate();
     setErrors(e);
+    setApiError("");
     if (Object.keys(e).length) return;
 
     setSaving(true);
@@ -160,13 +163,13 @@ export default function ProjectForm({ initialData, projectId }) {
       const fd = new FormData();
       fd.append("name", form.name.trim());
       fd.append("location", form.location.trim());
-      fd.append("propertySize", form.propertySize.trim());
-      fd.append("price", form.price.trim());
+      fd.append("propertySize", (form.propertySize || "").trim());
+      fd.append("price", (form.price || "").trim());
       fd.append("status", form.status);
       fd.append("category", form.category);
-      fd.append("overview", form.overview.trim());
-      fd.append("reraNumber", form.reraNumber.trim());
-      fd.append("reraUrl", form.reraUrl.trim());
+      fd.append("overview", form.overview || "");
+      fd.append("reraNumber", (form.reraNumber || "").trim());
+      fd.append("reraUrl", (form.reraUrl || "").trim());
       fd.append("isFeatured", form.isFeatured);
       fd.append("isActive", form.isActive);
       fd.append("aboutCity", JSON.stringify(form.aboutCity));
@@ -179,9 +182,9 @@ export default function ProjectForm({ initialData, projectId }) {
         : await dispatch(createProject(fd, router));
 
       if (res?.status) router.push("/projects");
-      else alert(res?.data?.message || res?.message || "Something went wrong.");
+      else setApiError(res?.data?.message || res?.message || "Something went wrong.");
     } catch (err) {
-      alert(err?.message || "Something went wrong.");
+      setApiError(err?.message || "Something went wrong.");
     } finally { setSaving(false); }
   };
 
@@ -355,6 +358,20 @@ export default function ProjectForm({ initialData, projectId }) {
               </div>
             )}
           </Section>
+
+          {/* API error */}
+          {apiError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+              {apiError}
+            </div>
+          )}
+
+          {/* Cover image error (shown near bottom for visibility) */}
+          {errors.imageFile && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+              {errors.imageFile}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

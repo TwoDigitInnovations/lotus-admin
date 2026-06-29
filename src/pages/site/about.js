@@ -113,16 +113,23 @@ const LEADERS_SAMPLE = [
 
 function HeroTab({ data, onSaved, router }) {
   const [form, setForm] = useState({ heading: "About Us", subheading: "", ...data });
+  const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => setForm({ heading: "About Us", subheading: "", ...data }), [data]);
+  useEffect(() => { setForm({ heading: "About Us", subheading: "", ...data }); setErrors({}); }, [data]);
 
   const save = async () => {
+    const errs = {};
+    if (!form.heading.trim()) errs.heading = "Heading is required";
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
     setSaving(true);
     try {
       const res = await Api("put", "about-page/hero", form, router);
       if (res?.status) onSaved("Hero section saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 
@@ -135,10 +142,11 @@ function HeroTab({ data, onSaved, router }) {
       <Field label="Page Heading">
         <input
           value={form.heading}
-          onChange={(e) => setForm((f) => ({ ...f, heading: e.target.value }))}
-          className={INPUT}
+          onChange={(e) => { setForm((f) => ({ ...f, heading: e.target.value })); setErrors({}); }}
+          className={`${INPUT} ${errors.heading ? "border-red-300 bg-red-50" : ""}`}
           placeholder="About Us"
         />
+        {errors.heading && <p className="text-red-500 text-xs mt-1">{errors.heading}</p>}
       </Field>
 
       <Field label="Subheading">
@@ -186,7 +194,9 @@ function StoryTab({ data, onSaved, router }) {
       else if (!file && preview && !preview.startsWith("blob:")) fd.append("imageUrl", preview);
       const res = await ApiFormData("put", "about-page/story", fd, router);
       if (res?.status) onSaved("Story section saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 
@@ -321,7 +331,9 @@ function CommitmentsTab({ data, onSaved, router }) {
     try {
       const res = await Api("put", "about-page/commitments", { commitments }, router);
       if (res?.status) onSaved("Commitments saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 
@@ -437,7 +449,9 @@ function LeadersTab({ data, onSaved, router }) {
       leaders.forEach((l, i) => { if (l._file) fd.append(`image_${i}`, l._file); });
       const res = await ApiFormData("put", "about-page/leaders", fd, router);
       if (res?.status) onSaved("Leaders saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 

@@ -58,7 +58,7 @@ function Toast({ msg, type }) {
   );
 }
 
-function DeleteModal({ banner, onClose, onConfirm, deleting }) {
+function DeleteModal({ onClose, onConfirm, deleting }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
@@ -109,6 +109,7 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
   const [preview, setPreview] = useState(initial?.media || "");
   const [sampleMediaUrl, setSampleMediaUrl] = useState("");
   const [sampleIdx, setSampleIdx] = useState(0);
+  const [errors, setErrors] = useState({});
   const fileRef = useRef();
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -148,11 +149,16 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!initial && !file && !sampleMediaUrl) return alert("Please select an image or video.");
+    const errs = {};
+    if (!form.title.trim()) errs.title = "Title is required";
+    if (!initial && !file && !sampleMediaUrl) errs.media = "Please select an image or video";
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
+
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => fd.append(k, v));
     if (file) fd.append("media", file);
-    else if (!file && sampleMediaUrl) fd.append("mediaUrl", sampleMediaUrl);
+    else if (sampleMediaUrl) fd.append("mediaUrl", sampleMediaUrl);
     onSave(fd);
   };
 
@@ -187,7 +193,11 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
             <label className={LABEL_CLS}>Banner Image / Video</label>
             {preview ? (
               <div className="relative rounded-xl overflow-hidden border border-slate-200">
-                <img src={preview} alt="preview" className="w-full object-cover rounded-xl" style={{ height: 180 }} />
+                {form.type === "video" ? (
+                  <video src={preview} className="w-full object-cover rounded-xl" style={{ height: 180 }} muted autoPlay loop />
+                ) : (
+                  <img src={preview} alt="preview" className="w-full object-cover rounded-xl" style={{ height: 180 }} />
+                )}
                 <button
                   type="button"
                   onClick={clearMedia}
@@ -215,13 +225,20 @@ function BannerForm({ initial, onSave, onCancel, saving }) {
               </div>
             )}
             <input ref={fileRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFile} />
+            {errors.media && <p className="text-red-500 text-xs mt-1">{errors.media}</p>}
           </div>
 
           {/* Text fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={LABEL_CLS}>Title</label>
-              <input value={form.title} onChange={(e) => set("title", e.target.value)} className={FIELD_CLS} placeholder="Slide headline" />
+              <label className={LABEL_CLS}>Title <span className="text-red-400 normal-case font-normal">*</span></label>
+              <input
+                value={form.title}
+                onChange={(e) => { set("title", e.target.value); setErrors((p) => ({ ...p, title: "" })); }}
+                className={`${FIELD_CLS} ${errors.title ? "border-red-300 bg-red-50" : ""}`}
+                placeholder="Slide headline"
+              />
+              {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
             </div>
             <div>
               <label className={LABEL_CLS}>Subtitle</label>
@@ -326,8 +343,8 @@ function BannersPage() {
       } else {
         showToast(res?.message || "Failed to save", "error");
       }
-    } catch {
-      showToast("Failed to save", "error");
+    } catch (err) {
+      showToast(err?.message || "Failed to save banner", "error");
     } finally {
       setSaving(false);
     }

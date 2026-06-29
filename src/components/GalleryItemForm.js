@@ -93,6 +93,7 @@ export default function GalleryItemForm({ initialData, itemId }) {
     imagePreview: initialData?.image || "",
   }));
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const set = (k, v) => { setForm((p) => ({ ...p, [k]: v })); setErrors((p) => ({ ...p, [k]: "" })); };
@@ -108,6 +109,7 @@ export default function GalleryItemForm({ initialData, itemId }) {
   const handleSubmit = async () => {
     const e = validate();
     setErrors(e);
+    setApiError("");
     if (Object.keys(e).length) return;
 
     setSaving(true);
@@ -126,9 +128,9 @@ export default function GalleryItemForm({ initialData, itemId }) {
         : await dispatch(createGalleryItem(fd, router));
 
       if (res?.status) router.push("/gallery");
-      else alert(res?.data?.message || res?.message || "Something went wrong.");
+      else setApiError(res?.data?.message || res?.message || "Something went wrong.");
     } catch (err) {
-      alert(err?.message || "Something went wrong.");
+      setApiError(err?.message || "Something went wrong.");
     } finally { setSaving(false); }
   };
 
@@ -254,6 +256,13 @@ export default function GalleryItemForm({ initialData, itemId }) {
             label="Active / Visible"
             description="Show this item on the public website"
           />
+
+          {/* API error */}
+          {apiError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+              {apiError}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

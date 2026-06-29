@@ -179,6 +179,7 @@ function WelcomeTab({ data, onSaved, router }) {
   });
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState(data?.images || []);
+  const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const fileRef = useRef();
 
@@ -194,6 +195,10 @@ function WelcomeTab({ data, onSaved, router }) {
   };
 
   const save = async () => {
+    const errs = {};
+    if (!form.heading.trim()) errs.heading = "Heading is required";
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
     setSaving(true);
     try {
       const fd = new FormData();
@@ -207,7 +212,9 @@ function WelcomeTab({ data, onSaved, router }) {
       }
       const res = await ApiFormData("put", "site-settings/welcome", fd, router);
       if (res?.status) onSaved("Welcome section saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally {
       setSaving(false);
     }
@@ -229,10 +236,11 @@ function WelcomeTab({ data, onSaved, router }) {
       <Field label="Heading" required>
         <input
           value={form.heading}
-          onChange={(e) => setForm((f) => ({ ...f, heading: e.target.value }))}
-          className={INPUT}
+          onChange={(e) => { setForm((f) => ({ ...f, heading: e.target.value })); setErrors({}); }}
+          className={`${INPUT} ${errors.heading ? "border-red-300 bg-red-50" : ""}`}
           placeholder="Welcome to Lotusss"
         />
+        {errors.heading && <p className="text-red-500 text-xs mt-1">{errors.heading}</p>}
       </Field>
 
       <Field label="Subheading">
@@ -345,7 +353,9 @@ function WhyChooseUsTab({ data, onSaved, router }) {
         router,
       );
       if (res?.status) onSaved("Why Choose Us saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally {
       setSaving(false);
     }
@@ -514,7 +524,9 @@ function TestimonialsTab({ data, onSaved, router }) {
         router,
       );
       if (res?.status) onSaved("Testimonials saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally {
       setSaving(false);
     }
@@ -686,7 +698,9 @@ function FooterTab({ data, onSaved, router }) {
     try {
       const res = await Api("put", "site-settings/footer", form, router);
       if (res?.status) onSaved("Footer saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally {
       setSaving(false);
     }
@@ -812,7 +826,9 @@ function GeneralTab({ data, onSaved, router }) {
       fd.append("contactSectionImageUrl", contactImg);
       const res = await ApiFormData("put", "site-settings/general", fd, router);
       if (res?.status) onSaved("General settings saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 
@@ -889,7 +905,9 @@ function SectionHeadingsTab({ data, onSaved, router }) {
     try {
       const res = await Api("put", "site-settings/section-headings", form, router);
       if (res?.status) onSaved("Section headings saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 
@@ -955,7 +973,9 @@ function PageBannersTab({ data, onSaved, router }) {
       });
       const res = await ApiFormData("put", "site-settings/page-banners", fd, router);
       if (res?.status) onSaved("Page banners saved!");
-      else onSaved(res?.message || "Failed", "error");
+      else onSaved(res?.message || "Failed to save", "error");
+    } catch (err) {
+      onSaved(err?.message || "Failed to save", "error");
     } finally { setSaving(false); }
   };
 

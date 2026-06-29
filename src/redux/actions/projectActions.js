@@ -44,7 +44,7 @@ export const fetchProjects =
 export const fetchProjectById = (id, router) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const res = await Api("get", `projects/${id}`, "", router);
+    const res = await Api("get", `projects/admin/${id}`, "", router);
     if (res?.status) {
       dispatch(setCurrentProject(res.data?.data || res.data));
     }
