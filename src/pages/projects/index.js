@@ -209,11 +209,10 @@ function ProjectsPage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <StatCard label="Total" value={stats.total} icon={LayoutGrid} color="#078DD4" />
             <StatCard label="Residential" value={stats.residential} icon={Building2} color="#0d1f35" />
             <StatCard label="Commercial" value={stats.commercial} icon={Building2} color="#078DD4" />
-            <StatCard label="Featured" value={stats.featured} icon={Star} color="#0d1f35" />
           </div>
 
           {/* Filters */}
