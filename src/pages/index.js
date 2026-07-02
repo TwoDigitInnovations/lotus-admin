@@ -209,6 +209,7 @@ function Dashboard() {
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50">
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Name</th>
+                      <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide hidden lg:table-cell">Email</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Phone</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide hidden md:table-cell">Subject</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Status</th>
@@ -219,6 +220,7 @@ function Dashboard() {
                     {recentContacts.map((c, i) => (
                       <tr key={c._id || i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                         <td className="px-5 py-3 font-semibold text-slate-800">{c.name}</td>
+                        <td className="px-5 py-3 text-slate-500 hidden lg:table-cell max-w-48 truncate">{c.email || "—"}</td>
                         <td className="px-5 py-3 text-slate-500">
                           <div className="flex items-center gap-1.5">
                             <Phone size={11} className="text-slate-300 shrink-0" />

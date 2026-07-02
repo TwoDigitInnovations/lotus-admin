@@ -168,6 +168,13 @@ function ContactModal({ contact, onClose, onStatusUpdate, onDelete, updating, de
             </div>
           </div>
 
+          {contact.email && (
+            <div className="bg-slate-50 rounded-xl px-4 py-3">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Email</p>
+              <p className="text-sm font-medium text-slate-800 break-all">{contact.email}</p>
+            </div>
+          )}
+
           {contact.subject && (
             <div>
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Subject</p>
@@ -288,6 +295,13 @@ function Contacts(props) {
             </div>
             <span className="font-medium text-slate-800 max-w-30 truncate">{value}</span>
           </div>
+        ),
+      },
+      {
+        Header: "Email",
+        accessor: "email",
+        Cell: ({ value }) => (
+          <span className="text-slate-600 max-w-44 truncate block">{value || <span className="text-slate-300">—</span>}</span>
         ),
       },
       {
