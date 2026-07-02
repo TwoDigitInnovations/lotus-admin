@@ -380,7 +380,7 @@ function Contacts(props) {
         disableSortBy: true,
       },
     ],
-    [updating],
+    [updating], 
   );
 
   // Counts always computed from the full list (not filtered)
