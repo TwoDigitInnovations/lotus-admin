@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
@@ -39,18 +39,9 @@ export default function RichEditor({
   placeholder = "Enter content here…",
 }) {
   const editorRef = useRef(null);
-  const [local, setLocal] = useState(value || "");
-  const isInternalChange = useRef(false);
-
-  // Only sync parent value into editor when it's an external change (initial load / reset),
-  // not when we ourselves triggered it by typing — that would reset the cursor.
-  useEffect(() => {
-    if (isInternalChange.current) {
-      isInternalChange.current = false;
-      return;
-    }
-    setLocal(value || "");
-  }, [value]);
+  // Capture value only on mount — never update it while typing.
+  // Parents use the `key` prop to force a remount when they need to reset content.
+  const initialValue = useRef(value || "");
 
   const config = useMemo(
     () => ({
@@ -98,19 +89,11 @@ export default function RichEditor({
     <div className="jodit-admin-wrap">
       <JoditEditor
         ref={editorRef}
-        value={local}
+        value={initialValue.current}
         config={config}
         tabIndex={1}
-        onChange={(c) => {
-          isInternalChange.current = true;
-          setLocal(c);
-          onChange?.(c);
-        }}
-        onBlur={(c) => {
-          isInternalChange.current = true;
-          setLocal(c);
-          onChange?.(c);
-        }}
+        onChange={(c) => onChange?.(c)}
+        onBlur={(c) => onChange?.(c)}
       />
     </div>
   );
