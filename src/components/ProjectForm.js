@@ -245,8 +245,7 @@ export default function ProjectForm({ initialData, projectId }) {
                 <input value={form.propertySize} onChange={(e) => set("propertySize", e.target.value)} placeholder="e.g. 1200 sq.ft" className={FIELD_CLS} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <Toggle value={form.isFeatured} onChange={(v) => set("isFeatured", v)} label="Featured" description="Show on homepage" />
+            <div className="grid grid-cols-1 gap-4 mt-4">
               <Toggle value={form.isActive} onChange={(v) => set("isActive", v)} label="Active" description="Visible on website" />
             </div>
           </Section>
