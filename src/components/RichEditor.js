@@ -40,9 +40,15 @@ export default function RichEditor({
 }) {
   const editorRef = useRef(null);
   const [local, setLocal] = useState(value || "");
+  const isInternalChange = useRef(false);
 
-  // Sync when parent value changes (initial data load / tab switch)
+  // Only sync parent value into editor when it's an external change (initial load / reset),
+  // not when we ourselves triggered it by typing — that would reset the cursor.
   useEffect(() => {
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
     setLocal(value || "");
   }, [value]);
 
@@ -96,10 +102,12 @@ export default function RichEditor({
         config={config}
         tabIndex={1}
         onChange={(c) => {
+          isInternalChange.current = true;
           setLocal(c);
           onChange?.(c);
         }}
         onBlur={(c) => {
+          isInternalChange.current = true;
           setLocal(c);
           onChange?.(c);
         }}

@@ -221,16 +221,13 @@ function Contacts(props) {
   const [deleting, setDeleting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  const load = useCallback(
-    (status = activeStatus) => {
-      dispatch(fetchContacts({ page: 1, limit: 200, status }, router));
-    },
-    [dispatch, activeStatus, router],
-  );
+  const load = useCallback(() => {
+    dispatch(fetchContacts({ page: 1, limit: 500 }, router));
+  }, [dispatch, router]);
 
   useEffect(() => {
-    load(activeStatus);
-  }, [activeStatus]);
+    load();
+  }, []);
 
   const handleStatusChange = async (id, status) => {
     setUpdating(true);
@@ -372,11 +369,16 @@ function Contacts(props) {
     [updating],
   );
 
-  // Stat counts
+  // Counts always computed from the full list (not filtered)
   const counts = contacts.reduce(
     (acc, c) => { acc[c.status] = (acc[c.status] || 0) + 1; return acc; },
     { new: 0, read: 0, replied: 0 },
   );
+
+  // Table shows only contacts matching the active status filter (client-side)
+  const displayedContacts = activeStatus
+    ? contacts.filter((c) => c.status === activeStatus)
+    : contacts;
 
   return (
     <>
@@ -431,7 +433,7 @@ function Contacts(props) {
             </p>
           </div>
           <button
-            onClick={() => load(activeStatus)}
+            onClick={() => load()}
             className="text-xs font-semibold px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
           >
             Refresh
@@ -493,7 +495,7 @@ function Contacts(props) {
               style={{ borderColor: "#078DD4", borderTopColor: "transparent" }}
             />
           </div>
-        ) : contacts.length === 0 ? (
+        ) : displayedContacts.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-100 flex flex-col items-center justify-center py-16 text-center px-4">
             <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-3">
               <MessageSquare size={22} className="text-slate-400" />
@@ -506,7 +508,7 @@ function Contacts(props) {
         ) : (
           <Table
             columns={columns}
-            data={contacts}
+            data={displayedContacts}
             pageSize={15}
             onRowClick={(row) => setSelected(row)}
             emptyComponent={

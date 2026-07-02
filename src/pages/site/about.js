@@ -344,7 +344,11 @@ function CommitmentsTab({ data, onSaved, router }) {
           {commitments.length} Commitment{commitments.length !== 1 ? "s" : ""}
         </span>
         <div className="flex items-center gap-2">
-          <SampleBtn onClick={() => setCommitments(COMMITMENTS_SAMPLE)} />
+          <SampleBtn onClick={() => {
+            if (commitments.length === 0 || window.confirm('This will replace your existing commitments with sample data. Continue?')) {
+              setCommitments(COMMITMENTS_SAMPLE);
+            }
+          }} />
           <button
             onClick={add}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white"
