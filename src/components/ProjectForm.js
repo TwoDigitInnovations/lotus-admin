@@ -26,6 +26,7 @@ const EMPTY = {
   status: "Under Construction",
   category: "residential",
   overview: "",
+  mapEmbed: "",
   reraNumber: "",
   reraUrl: "",
   aboutCity: { name: "", text: "" },
@@ -39,6 +40,8 @@ const EMPTY = {
   isActive: true,
   imageFile: null,
   imagePreview: "",
+  locationImageFile: null,
+  locationImagePreview: "",
 };
 
 const toSlug = (str) =>
@@ -53,6 +56,9 @@ const toSlug = (str) =>
 const EMPTY_PHOTO = { image: "", imageFile: null, imagePreview: "" };
 const EMPTY_VIDEO = {
   videoUrl: "",
+  isUpload: false,
+  videoFile: null,
+  videoPreview: "",
   thumbnail: "",
   thumbFile: null,
   thumbPreview: "",
@@ -227,6 +233,7 @@ export default function ProjectForm({ initialData, projectId }) {
         status: initialData.status || "Under Construction",
         category: initialData.category || "residential",
         overview: initialData.overview || "",
+        mapEmbed: initialData.mapEmbed || "",
         reraNumber: initialData.reraNumber || "",
         reraUrl: initialData.reraUrl || "",
         aboutCity: initialData.aboutCity || { name: "", text: "" },
@@ -238,12 +245,17 @@ export default function ProjectForm({ initialData, projectId }) {
             image: p.image || "",
             imagePreview: p.image || "",
           })),
-          videos: (initialData.gallery?.videos || []).map((v) => ({
-            ...EMPTY_VIDEO,
-            videoUrl: v.videoUrl || "",
-            thumbnail: v.thumbnail || "",
-            thumbPreview: v.thumbnail || "",
-          })),
+          videos: (initialData.gallery?.videos || []).map((v) => {
+            const isYt = v.videoUrl && (v.videoUrl.includes("youtube.com") || v.videoUrl.includes("youtu.be"));
+            return {
+              ...EMPTY_VIDEO,
+              videoUrl: v.videoUrl || "",
+              isUpload: v.videoUrl ? !isYt : false,
+              videoPreview: v.videoUrl && !isYt ? v.videoUrl : "",
+              thumbnail: v.thumbnail || "",
+              thumbPreview: v.thumbnail || "",
+            };
+          }),
         },
         slug: initialData.slug || "",
         metaTitle: initialData.metaTitle || "",
@@ -252,6 +264,8 @@ export default function ProjectForm({ initialData, projectId }) {
         isActive: initialData.isActive !== false,
         imageFile: null,
         imagePreview: initialData.image || "",
+        locationImageFile: null,
+        locationImagePreview: initialData.locationImage || "",
       };
     }
     return { ...EMPTY };
@@ -342,6 +356,7 @@ export default function ProjectForm({ initialData, projectId }) {
       fd.append("status", form.status);
       fd.append("category", form.category);
       fd.append("overview", form.overview || "");
+      fd.append("mapEmbed", form.mapEmbed || "");
       fd.append("reraNumber", (form.reraNumber || "").trim());
       fd.append("reraUrl", (form.reraUrl || "").trim());
       fd.append("isFeatured", form.isFeatured);
@@ -357,13 +372,13 @@ export default function ProjectForm({ initialData, projectId }) {
       fd.append("metaDescription", (form.metaDescription || "").trim());
 
       const photos = form.gallery.photos.filter((p) => p.imageFile || p.image);
-      const videos = form.gallery.videos.filter((v) => v.videoUrl.trim());
+      const videos = form.gallery.videos.filter((v) => v.videoFile || v.videoUrl.trim());
       fd.append(
         "gallery",
         JSON.stringify({
           photos: photos.map((p) => ({ image: p.imageFile ? "" : p.image })),
           videos: videos.map((v) => ({
-            videoUrl: v.videoUrl.trim(),
+            videoUrl: v.isUpload ? "" : v.videoUrl.trim(),
             thumbnail: v.thumbFile ? "" : v.thumbnail,
           })),
         }),
@@ -373,9 +388,11 @@ export default function ProjectForm({ initialData, projectId }) {
       });
       videos.forEach((v, i) => {
         if (v.thumbFile) fd.append(`galleryVideoThumb_${i}`, v.thumbFile);
+        if (v.videoFile) fd.append(`galleryVideo_${i}`, v.videoFile);
       });
 
       if (form.imageFile) fd.append("image", form.imageFile);
+      if (form.locationImageFile) fd.append("locationImage", form.locationImageFile);
 
       const res = isEdit
         ? await dispatch(updateProject(projectId, fd, router))
@@ -444,6 +461,15 @@ export default function ProjectForm({ initialData, projectId }) {
                   <p className="text-red-500 text-xs mt-1">{errors.location}</p>
                 )}
               </div>
+              <div className="col-span-2">
+                <label className={LABEL_CLS}>Google Map Embed Code</label>
+                <textarea
+                  value={form.mapEmbed || ""}
+                  onChange={(e) => set("mapEmbed", e.target.value)}
+                  placeholder='Paste Google Map <iframe src="..."></iframe> code here…'
+                  className={`${FIELD_CLS} h-20 resize-none`}
+                />
+              </div>
               <div>
                 <label className={LABEL_CLS}>Category *</label>
                 <select
@@ -506,6 +532,22 @@ export default function ProjectForm({ initialData, projectId }) {
                 setForm((f) => ({ ...f, imageFile: null, imagePreview: "" }))
               }
             />
+          </Section>
+
+          {/* Location Map Image */}
+          <Section icon={MapPin} title="Location Map Image (Fallback)">
+            <UploadZone
+              preview={form.locationImagePreview}
+              onChange={(file, url) =>
+                setForm((f) => ({ ...f, locationImageFile: file, locationImagePreview: url }))
+              }
+              onClear={() =>
+                setForm((f) => ({ ...f, locationImageFile: null, locationImagePreview: "" }))
+              }
+            />
+            <p className="text-xs text-slate-400 mt-2">
+              Optional: This image will display under the Location section if no interactive Google Map Embed Code is supplied.
+            </p>
           </Section>
 
           {/* Overview */}
@@ -788,14 +830,64 @@ export default function ProjectForm({ initialData, projectId }) {
                             }
                             hint="Thumbnail image (optional)"
                           />
-                          <input
-                            value={v.videoUrl}
-                            onChange={(e) =>
-                              updateGalleryVideo(i, { videoUrl: e.target.value })
-                            }
-                            placeholder="Video URL (https://…)"
-                            className={`${FIELD_CLS} flex-1`}
-                          />
+                          <div className="flex-1 flex flex-col gap-2">
+                            {/* URL/Upload Toggle */}
+                            <div className="flex gap-2 text-[10px] font-semibold">
+                              <button
+                                type="button"
+                                onClick={() => updateGalleryVideo(i, { isUpload: false })}
+                                className={`px-2 py-1 rounded transition-colors ${!v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
+                              >
+                                Paste Video URL
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => updateGalleryVideo(i, { isUpload: true })}
+                                className={`px-2 py-1 rounded transition-colors ${v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
+                              >
+                                Upload Video File
+                              </button>
+                            </div>
+
+                            {v.isUpload ? (
+                              <div className="flex items-center gap-3 w-full">
+                                {v.videoPreview ? (
+                                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2 text-xs text-emerald-800 font-semibold flex-1">
+                                    <span>🎥</span> Video file ready
+                                    <button
+                                      type="button"
+                                      onClick={() => updateGalleryVideo(i, { videoFile: null, videoPreview: "", videoUrl: "" })}
+                                      className="text-red-500 hover:text-red-700 ml-auto font-bold underline"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        if (file.size > 50 * 1024 * 1024) return alert("Max size is 50 MB");
+                                        updateGalleryVideo(i, { videoFile: file, videoPreview: URL.createObjectURL(file), videoUrl: "" });
+                                      }
+                                    }}
+                                    className="text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-[#078DD4] hover:file:bg-sky-100 cursor-pointer w-full"
+                                  />
+                                )}
+                              </div>
+                            ) : (
+                              <input
+                                value={v.videoUrl}
+                                onChange={(e) =>
+                                  updateGalleryVideo(i, { videoUrl: e.target.value })
+                                }
+                                placeholder="Video URL (https://youtube.com/watch?v=…)"
+                                className={FIELD_CLS}
+                              />
+                            )}
+                          </div>
                           <button
                             type="button"
                             onClick={() => removeGalleryVideo(i)}

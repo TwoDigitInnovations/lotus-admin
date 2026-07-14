@@ -161,10 +161,13 @@ const FOOTER_SAMPLE = {
   email: "info@lotusss.com",
   address: "Sector 94, Noida, Uttar Pradesh 201301",
   whatsapp: "919876543210",
+  mapEmbed: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.4287815598687!2d77.38072127622836!3d28.556885375705307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3c415555555%3A0x6d8bd6c4c95f190e!2sSector%2094%2C%20Noida%2C%20Uttar%20Pradesh%20201301!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
   socialLinks: {
     instagram: "https://instagram.com/lotusssinfra",
     facebook: "https://facebook.com/lotusssinfra",
     twitter: "https://twitter.com/lotusssinfra",
+    linkedin: "https://linkedin.com/company/lotusssinfra",
+    youtube: "https://youtube.com/c/lotusssinfra",
   },
 };
 
@@ -175,6 +178,8 @@ function WelcomeTab({ data, onSaved, router }) {
     heading: "",
     subheading: "",
     description: "",
+    metaTitle: "",
+    metaDescription: "",
     ...data,
   });
   const [files, setFiles] = useState([]);
@@ -184,7 +189,7 @@ function WelcomeTab({ data, onSaved, router }) {
   const fileRef = useRef();
 
   useEffect(() => {
-    setForm({ heading: "", subheading: "", description: "", ...data });
+    setForm({ heading: "", subheading: "", description: "", metaTitle: "", metaDescription: "", ...data });
     setPreviews(data?.images || []);
   }, [data]);
 
@@ -205,6 +210,8 @@ function WelcomeTab({ data, onSaved, router }) {
       fd.append("heading", form.heading);
       fd.append("subheading", form.subheading);
       fd.append("description", form.description);
+      fd.append("metaTitle", form.metaTitle || "");
+      fd.append("metaDescription", form.metaDescription || "");
       files.forEach((f) => fd.append("images", f));
       // If no files chosen but previews are remote URLs (sample data), send as imageUrls
       if (files.length === 0 && previews.length > 0 && previews.every((p) => !p.startsWith("blob:"))) {
@@ -319,6 +326,30 @@ function WelcomeTab({ data, onSaved, router }) {
           </p>
         )}
       </Field>
+
+      <div className="border-t border-slate-100 pt-5 space-y-4">
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide block">
+          Homepage SEO Settings
+        </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Meta Title">
+            <input
+              value={form.metaTitle || ""}
+              onChange={(e) => setForm((f) => ({ ...f, metaTitle: e.target.value }))}
+              className={INPUT}
+              placeholder="Luxury Properties in Noida"
+            />
+          </Field>
+          <Field label="Meta Description">
+            <textarea
+              value={form.metaDescription || ""}
+              onChange={(e) => setForm((f) => ({ ...f, metaDescription: e.target.value }))}
+              className={`${INPUT} h-[42px] py-2.5 resize-none`}
+              placeholder="Explore premium real estate projects by Lotusss in Noida…"
+            />
+          </Field>
+        </div>
+      </div>
 
       <SaveBtn onClick={save} saving={saving} />
     </div>
@@ -681,7 +712,7 @@ function TestimonialsTab({ data, onSaved, router }) {
 // ─── Footer Tab ───────────────────────────────────────────────────────────────
 
 function FooterTab({ data, onSaved, router }) {
-  const blank = { description: "", phone: "", altPhone: "", email: "", website: "", address: "", addressLine2: "", whatsapp: "", socialLinks: { instagram: "", facebook: "", twitter: "" } };
+  const blank = { description: "", phone: "", altPhone: "", email: "", website: "", address: "", addressLine2: "", whatsapp: "", mapEmbed: "", socialLinks: { instagram: "", facebook: "", twitter: "", linkedin: "", youtube: "" } };
   const [form, setForm] = useState({ ...blank, ...data, socialLinks: { ...blank.socialLinks, ...data?.socialLinks } });
   const [saving, setSaving] = useState(false);
 
@@ -753,6 +784,15 @@ function FooterTab({ data, onSaved, router }) {
         </div>
       </div>
 
+      <Field label="Google Map Embed Code">
+        <textarea
+          value={form.mapEmbed || ""}
+          onChange={(e) => set("mapEmbed", e.target.value)}
+          className={`${INPUT} h-24 resize-none`}
+          placeholder='Paste Google Map <iframe src="..."></iframe> code here…'
+        />
+      </Field>
+
       <div>
         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 block">
           Social Media Links
@@ -762,6 +802,8 @@ function FooterTab({ data, onSaved, router }) {
             ["instagram", "Instagram URL"],
             ["facebook", "Facebook URL"],
             ["twitter", "Twitter / X URL"],
+            ["linkedin", "LinkedIn URL"],
+            ["youtube", "YouTube URL"],
           ].map(([k, label]) => (
             <div key={k}>
               <label className="text-xs text-slate-500 mb-1 block">

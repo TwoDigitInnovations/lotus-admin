@@ -82,16 +82,22 @@ export default function GalleryItemForm({ initialData, itemId }) {
   const router = useRouter();
   const isEdit = !!itemId;
 
-  const [form, setForm] = useState(() => ({
-    name: initialData?.name || "",
-    location: initialData?.location || "",
-    type: initialData?.type || "photo",
-    videoUrl: initialData?.videoUrl || "",
-    order: initialData?.order ?? "",
-    isActive: initialData?.isActive !== false,
-    imageFile: null,
-    imagePreview: initialData?.image || "",
-  }));
+  const [form, setForm] = useState(() => {
+    const isYt = initialData?.videoUrl && (initialData.videoUrl.includes("youtube.com") || initialData.videoUrl.includes("youtu.be"));
+    const isVidUpload = initialData?.type === "video" && initialData?.videoUrl && !isYt;
+    return {
+      name: initialData?.name || "",
+      location: initialData?.location || "",
+      type: initialData?.type || "photo",
+      videoUrl: isVidUpload ? "" : (initialData?.videoUrl || ""),
+      isUpload: isVidUpload,
+      order: initialData?.order ?? "",
+      isActive: initialData?.isActive !== false,
+      imageFile: null,
+      imagePreview: isVidUpload ? "" : (initialData?.image || ""),
+      videoPreview: isVidUpload ? initialData.videoUrl : "",
+    };
+  });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -102,7 +108,13 @@ export default function GalleryItemForm({ initialData, itemId }) {
     const e = {};
     if (!form.name.trim()) e.name = "Name is required";
     if (form.type === "photo" && !initialData?.image && !form.imageFile) e.imageFile = "Please upload an image";
-    if (form.type === "video" && !form.videoUrl.trim()) e.videoUrl = "Video URL is required";
+    if (form.type === "video") {
+      if (form.isUpload) {
+        if (!initialData?.videoUrl && !form.imageFile) e.videoUrl = "Please upload a video file";
+      } else {
+        if (!form.videoUrl.trim()) e.videoUrl = "Video URL is required";
+      }
+    }
     return e;
   };
 
@@ -118,7 +130,9 @@ export default function GalleryItemForm({ initialData, itemId }) {
       fd.append("name", form.name.trim());
       fd.append("type", form.type);
       if (form.location.trim()) fd.append("location", form.location.trim());
-      if (form.type === "video") fd.append("videoUrl", form.videoUrl.trim());
+      if (form.type === "video") {
+        fd.append("videoUrl", form.isUpload ? "" : form.videoUrl.trim());
+      }
       if (form.order !== "") fd.append("order", parseInt(form.order) || 0);
       fd.append("isActive", form.isActive);
       if (form.imageFile) fd.append("image", form.imageFile);
@@ -186,22 +200,87 @@ export default function GalleryItemForm({ initialData, itemId }) {
                 {errors.imageFile && <p className={ERR_CLS}>{errors.imageFile}</p>}
               </>
             ) : (
-              <>
-                <label className={LABEL_CLS}>Video URL <span className="text-red-400 normal-case font-normal">*</span></label>
-                <input
-                  type="url"
-                  placeholder="https://youtube.com/watch?v=…"
-                  value={form.videoUrl}
-                  onChange={(e) => set("videoUrl", e.target.value)}
-                  className={`${FIELD_CLS} ${errors.videoUrl ? "border-red-300 bg-red-50" : ""}`}
-                />
-                {errors.videoUrl && <p className={ERR_CLS}>{errors.videoUrl}</p>}
-                {ytThumb && (
-                  <div className="mt-3 rounded-xl overflow-hidden border border-slate-100">
-                    <img src={ytThumb} alt="thumbnail" className="w-full h-36 object-cover" />
+              <div className="space-y-4">
+                <div>
+                  <label className={LABEL_CLS}>Video Source</label>
+                  <div className="grid grid-cols-2 gap-3 mt-1.5">
+                    <button
+                      type="button"
+                      onClick={() => set("isUpload", false)}
+                      className={`flex items-center justify-center gap-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all ${!form.isUpload ? "border-[#078DD4] bg-sky-50 text-[#078DD4]" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}
+                    >
+                      Paste Video Link
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => set("isUpload", true)}
+                      className={`flex items-center justify-center gap-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all ${form.isUpload ? "border-[#078DD4] bg-sky-50 text-[#078DD4]" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}
+                    >
+                      Upload Video File
+                    </button>
+                  </div>
+                </div>
+
+                {form.isUpload ? (
+                  <div>
+                    <label className={LABEL_CLS}>Video File <span className="text-red-400 normal-case font-normal">*</span></label>
+                    {form.videoPreview ? (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-800 font-semibold flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span>🎥</span> Video file loaded and ready
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setForm((p) => ({ ...p, imageFile: null, videoPreview: "" }))}
+                          className="text-red-500 hover:text-red-700 underline font-bold"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40 transition-all cursor-pointer overflow-hidden py-8 text-center"
+                           onClick={() => document.getElementById('gallery-video-file').click()}
+                      >
+                        <UploadCloud size={26} className="text-slate-300 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-slate-500">Click to upload video file</p>
+                        <p className="text-xs text-slate-400 mt-1">MP4, WebM, MOV · max 50 MB</p>
+                        <input
+                          id="gallery-video-file"
+                          type="file"
+                          accept="video/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 50 * 1024 * 1024) return alert("Max file size is 50 MB.");
+                              setForm((p) => ({ ...p, imageFile: file, videoPreview: URL.createObjectURL(file) }));
+                              setErrors((p) => ({ ...p, videoUrl: "" }));
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                    {errors.videoUrl && <p className={ERR_CLS}>{errors.videoUrl}</p>}
+                  </div>
+                ) : (
+                  <div>
+                    <label className={LABEL_CLS}>Video URL <span className="text-red-400 normal-case font-normal">*</span></label>
+                    <input
+                      type="url"
+                      placeholder="https://youtube.com/watch?v=…"
+                      value={form.videoUrl}
+                      onChange={(e) => set("videoUrl", e.target.value)}
+                      className={`${FIELD_CLS} ${errors.videoUrl ? "border-red-300 bg-red-50" : ""}`}
+                    />
+                    {errors.videoUrl && <p className={ERR_CLS}>{errors.videoUrl}</p>}
+                    {ytThumb && (
+                      <div className="mt-3 rounded-xl overflow-hidden border border-slate-100">
+                        <img src={ytThumb} alt="thumbnail" className="w-full h-36 object-cover" />
+                      </div>
+                    )}
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
 

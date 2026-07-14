@@ -392,6 +392,9 @@ function CommitmentsTab({ data, onSaved, router }) {
                       className={INPUT}
                       placeholder="Star, Users, Clock, Award…"
                     />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Available: Star, Users, Clock, Award, Trophy, Heart, USD, Dollar, Building, Key, Home, Percent, Shield, Location
+                    </p>
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">Title</label>
