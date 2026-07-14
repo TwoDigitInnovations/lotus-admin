@@ -52,6 +52,11 @@ const STATUS_CONFIG = {
   },
 };
 
+const ENQUIRY_TYPE_CONFIG = {
+  "Partner Enquiry": { bg: "bg-amber-50", text: "text-amber-700" },
+  "General/Sales Enquiry": { bg: "bg-emerald-50", text: "text-emerald-700" },
+};
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDate(iso) {
@@ -172,6 +177,19 @@ function ContactModal({ contact, onClose, onStatusUpdate, onDelete, updating, de
             <div className="bg-slate-50 rounded-xl px-4 py-3">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Email</p>
               <p className="text-sm font-medium text-slate-800 break-all">{contact.email}</p>
+            </div>
+          )}
+
+          {contact.enquiryType && (
+            <div className="bg-slate-50 rounded-xl px-4 py-3">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Enquiry Type</p>
+              <span
+                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  (ENQUIRY_TYPE_CONFIG[contact.enquiryType] || {}).bg || "bg-slate-100"
+                } ${(ENQUIRY_TYPE_CONFIG[contact.enquiryType] || {}).text || "text-slate-600"}`}
+              >
+                {contact.enquiryType}
+              </span>
             </div>
           )}
 
@@ -313,6 +331,20 @@ function Contacts(props) {
             {value}
           </div>
         ),
+      },
+      {
+        Header: "Enquiry Type",
+        accessor: "enquiryType",
+        Cell: ({ value }) => {
+          const cfg = ENQUIRY_TYPE_CONFIG[value] || { bg: "bg-slate-100", text: "text-slate-500" };
+          return value ? (
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap ${cfg.bg} ${cfg.text}`}>
+              {value}
+            </span>
+          ) : (
+            <span className="text-slate-300">—</span>
+          );
+        },
       },
       {
         Header: "Subject",

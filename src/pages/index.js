@@ -211,6 +211,7 @@ function Dashboard() {
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Name</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Email</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Phone</th>
+                      <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide hidden lg:table-cell">Enquiry Type</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide hidden md:table-cell">Subject</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Status</th>
                       <th className="text-left px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide hidden sm:table-cell">Date</th>
@@ -227,6 +228,7 @@ function Dashboard() {
                             {c.phone}
                           </div>
                         </td>
+                        <td className="px-5 py-3 text-slate-500 hidden lg:table-cell whitespace-nowrap">{c.enquiryType || "—"}</td>
                         <td className="px-5 py-3 text-slate-500 hidden md:table-cell max-w-50 truncate">{c.subject || "—"}</td>
                         <td className="px-5 py-3"><StatusBadge status={c.status} /></td>
                         <td className="px-5 py-3 text-xs text-slate-400 hidden sm:table-cell">
