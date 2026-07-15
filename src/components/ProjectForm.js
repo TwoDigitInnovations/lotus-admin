@@ -163,21 +163,33 @@ function MiniUploadZone({
 
   const handle = (file) => {
     if (!file) return;
-    if (!file.type.startsWith("image/")) return alert("Select an image file.");
-    if (file.size > 10 * 1024 * 1024) return alert("Max 10 MB.");
+    const isVideo = accept.includes("video");
+    if (isVideo) {
+      if (!file.type.startsWith("video/")) return alert("Select a video file.");
+      if (file.size > 50 * 1024 * 1024) return alert("Max 50 MB.");
+    } else {
+      if (!file.type.startsWith("image/")) return alert("Select an image file.");
+      if (file.size > 10 * 1024 * 1024) return alert("Max 10 MB.");
+    }
     onChange(file, URL.createObjectURL(file));
   };
 
+  const isVideo = accept.includes("video");
+
   return preview ? (
     <div
-      className="relative rounded-lg overflow-hidden shrink-0"
+      className="relative rounded-lg overflow-hidden shrink-0 bg-slate-900 flex items-center justify-center"
       style={{ width: 96, height: 96 }}
     >
-      <img src={preview} alt="preview" className="w-full h-full object-cover" />
+      {isVideo ? (
+        <video src={preview} className="w-full h-full object-cover" muted playsInline />
+      ) : (
+        <img src={preview} alt="preview" className="w-full h-full object-cover" />
+      )}
       <button
         type="button"
         onClick={onClear}
-        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors z-10"
       >
         <X size={10} />
       </button>
@@ -186,11 +198,14 @@ function MiniUploadZone({
     <>
       <div
         onClick={() => inputRef.current.click()}
-        className="rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40 cursor-pointer flex flex-col items-center justify-center shrink-0 transition-all"
+        className="rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 hover:border-[#078DD4] hover:bg-sky-50/40 cursor-pointer flex flex-col items-center justify-center shrink-0 transition-all text-center"
         style={{ width: 96, height: 96 }}
         title={hint}
       >
         <UploadCloud size={16} className="text-slate-300" />
+        <span className="text-[10px] text-slate-400 mt-1.5 font-semibold leading-none">
+          {isVideo ? "Upload Video" : "Upload Image"}
+        </span>
       </div>
       <input
         ref={inputRef}
@@ -811,70 +826,117 @@ export default function ProjectForm({ initialData, projectId }) {
                       {form.gallery.videos.map((v, i) => (
                         <div
                           key={i}
-                          className="flex gap-3 items-center bg-slate-50 border border-slate-200 rounded-xl p-3"
+                          className="flex gap-4 items-center bg-slate-50 border border-slate-200 rounded-xl p-4 animate-fade-in"
                         >
-                          <MiniUploadZone
-                            preview={v.thumbPreview}
-                            onChange={(file, url) =>
-                              updateGalleryVideo(i, {
-                                thumbFile: file,
-                                thumbPreview: url,
-                              })
-                            }
-                            onClear={() =>
-                              updateGalleryVideo(i, {
-                                thumbFile: null,
-                                thumbPreview: "",
-                                thumbnail: "",
-                              })
-                            }
-                            hint="Thumbnail image (optional)"
-                          />
-                          <div className="flex-1 flex flex-col gap-2">
+                          <div className="flex gap-3 shrink-0">
+                            {v.isUpload ? (
+                              <>
+                                {/* Video File Box */}
+                                <div className="flex flex-col items-center">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                    Video *
+                                  </span>
+                                  <MiniUploadZone
+                                    preview={v.videoPreview}
+                                    accept="video/*"
+                                    hint="Video file (MP4, WebM, MOV · max 50 MB)"
+                                    onChange={(file, url) =>
+                                      updateGalleryVideo(i, {
+                                        videoFile: file,
+                                        videoPreview: url,
+                                        videoUrl: "",
+                                      })
+                                    }
+                                    onClear={() =>
+                                      updateGalleryVideo(i, {
+                                        videoFile: null,
+                                        videoPreview: "",
+                                        videoUrl: "",
+                                      })
+                                    }
+                                  />
+                                </div>
+                                {/* Thumbnail Box */}
+                                <div className="flex flex-col items-center">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                    Thumb (opt)
+                                  </span>
+                                  <MiniUploadZone
+                                    preview={v.thumbPreview}
+                                    accept="image/*"
+                                    hint="Thumbnail image (optional)"
+                                    onChange={(file, url) =>
+                                      updateGalleryVideo(i, {
+                                        thumbFile: file,
+                                        thumbPreview: url,
+                                      })
+                                    }
+                                    onClear={() =>
+                                      updateGalleryVideo(i, {
+                                        thumbFile: null,
+                                        thumbPreview: "",
+                                        thumbnail: "",
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                  Thumb (opt)
+                                </span>
+                                <MiniUploadZone
+                                  preview={v.thumbPreview}
+                                  accept="image/*"
+                                  hint="Thumbnail image (optional)"
+                                  onChange={(file, url) =>
+                                    updateGalleryVideo(i, {
+                                      thumbFile: file,
+                                      thumbPreview: url,
+                                    })
+                                  }
+                                  onClear={() =>
+                                    updateGalleryVideo(i, {
+                                      thumbFile: null,
+                                      thumbPreview: "",
+                                      thumbnail: "",
+                                    })
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 flex flex-col gap-2.5">
                             {/* URL/Upload Toggle */}
                             <div className="flex gap-2 text-[10px] font-semibold">
                               <button
                                 type="button"
                                 onClick={() => updateGalleryVideo(i, { isUpload: false })}
-                                className={`px-2 py-1 rounded transition-colors ${!v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
+                                className={`px-2.5 py-1 rounded-md transition-colors ${!v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
                               >
                                 Paste Video URL
                               </button>
                               <button
                                 type="button"
                                 onClick={() => updateGalleryVideo(i, { isUpload: true })}
-                                className={`px-2 py-1 rounded transition-colors ${v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
+                                className={`px-2.5 py-1 rounded-md transition-colors ${v.isUpload ? "bg-[#078DD4] text-white" : "bg-slate-200 text-slate-500 hover:bg-slate-300"}`}
                               >
                                 Upload Video File
                               </button>
                             </div>
 
                             {v.isUpload ? (
-                              <div className="flex items-center gap-3 w-full">
+                              <div className="text-xs text-slate-500 font-medium">
                                 {v.videoPreview ? (
-                                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2 text-xs text-emerald-800 font-semibold flex-1">
-                                    <span>🎥</span> Video file ready
-                                    <button
-                                      type="button"
-                                      onClick={() => updateGalleryVideo(i, { videoFile: null, videoPreview: "", videoUrl: "" })}
-                                      className="text-red-500 hover:text-red-700 ml-auto font-bold underline"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
+                                  <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                                    🎥 Video file loaded and ready
+                                  </span>
                                 ) : (
-                                  <input
-                                    type="file"
-                                    accept="video/*"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        if (file.size > 50 * 1024 * 1024) return alert("Max size is 50 MB");
-                                        updateGalleryVideo(i, { videoFile: file, videoPreview: URL.createObjectURL(file), videoUrl: "" });
-                                      }
-                                    }}
-                                    className="text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-[#078DD4] hover:file:bg-sky-100 cursor-pointer w-full"
-                                  />
+                                  <span className="text-slate-400">
+                                    Please upload your video file using the box on the left.
+                                  </span>
                                 )}
                               </div>
                             ) : (
