@@ -859,7 +859,7 @@ export default function ProjectForm({ initialData, projectId }) {
                                 {/* Thumbnail Box */}
                                 <div className="flex flex-col items-center">
                                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                                    Thumb (opt)
+                                    Thumbnail (opt)
                                   </span>
                                   <MiniUploadZone
                                     preview={v.thumbPreview}
@@ -884,7 +884,7 @@ export default function ProjectForm({ initialData, projectId }) {
                             ) : (
                               <div className="flex flex-col items-center">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                                  Thumb (opt)
+                                  Thumbnail (opt)
                                 </span>
                                 <MiniUploadZone
                                   preview={v.thumbPreview}
@@ -935,7 +935,7 @@ export default function ProjectForm({ initialData, projectId }) {
                                   </span>
                                 ) : (
                                   <span className="text-slate-400">
-                                    Please upload your video file using the box on the left.
+                                    You can upload both the video file and its thumbnail image using the boxes on the left.
                                   </span>
                                 )}
                               </div>
